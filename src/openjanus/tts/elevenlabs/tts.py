@@ -10,7 +10,7 @@ from langchain.callbacks.manager import CallbackManagerForToolRun
 from langchain.pydantic_v1 import root_validator
 from langchain.tools.base import BaseTool
 from langchain.utils import get_from_dict_or_env
-import openjanus.stt.elevenlabs.async_patch as eleven_labs_async_patch
+import openjanus.tts.elevenlabs.async_patch as eleven_labs_async_patch
 
 
 def _import_elevenlabs() -> Any:
