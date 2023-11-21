@@ -1,5 +1,5 @@
 # OpenJanus - A voice controlled IA for Star Citizen
-I'll finish this when I get bored.
+I'll finish this when I get bored. Track the progress to alpha in [#1](https://github.com/Und3rf10w/OpenJanus/issues/1)
 
 OpenJanus is a voice controlled intelligent assistant for Star Citizen. It makes use of OpenAI's GPT for text generation, OpenAI whisper for speech to text conversion, and can make use of either piper or elevenlabs for text to speech generation.
 
