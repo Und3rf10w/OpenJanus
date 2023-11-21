@@ -13,10 +13,11 @@ OpenJanus works like so:
 - ATC
 - Onboard Ship IA capable of executing commands on the ship (e.g. "turn on my ship's lights)
 - Integration with sc-trade.tools
+- Integration with cstone.space
 - ???
 
 # Why?
-I get pissed when I see [videos like this](https://www.youtube.com/watch?v=hHy7OZQX_nQ) and they aren't released as open source; so I went full Bender and decided to make my own, only there's no blackjack or hookers.
+I get mildly annoyed when I see [videos like this](https://www.youtube.com/watch?v=hHy7OZQX_nQ) and they aren't released as open source; so I went full Bender and decided to make my own, only there's no blackjack or hookers.
 
 # What/where is the license?
 At this time I am not providing a license, but am providing the codebase. Depending on how things go, I'll decide to provide a license.

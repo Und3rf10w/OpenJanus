@@ -1,0 +1,22 @@
+[project]
+name = "OpenJanus"
+version = "0.1.0"
+description = "A voice controlled Intelligent Assistant for Star Citizen"
+authors = [
+    {name = "Und3rf10w", email = "dontemailme@example.com"},
+]
+dependencies = [
+    "langchain",
+    "torch",
+    "transformers",
+    "openai<=0.28.1",
+    "elevenlabs",
+]
+requires-python = ">=3.11.6"
+readme = "README.md"
+license = {text = "N/A"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+

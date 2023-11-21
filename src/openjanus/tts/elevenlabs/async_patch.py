@@ -1,6 +1,7 @@
 import asyncio
 import base64
 import json
+import logging
 import os
 from typing import Iterator, Optional, Union
 import websockets
@@ -8,6 +9,9 @@ from websockets.sync.client import connect
 
 from elevenlabs.api.tts import TTS, Voice, Model, API, api_base_url_v1, text_chunker
 from elevenlabs import VoiceSettings, is_voice_id
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 async def async_text_chunker(chunks):

@@ -1,6 +1,7 @@
 from datetime import datetime
-import tempfile
 from enum import Enum
+import logging
+import tempfile
 from typing import Any, Dict, Optional, Union, Iterator
 
 import asyncio
@@ -11,6 +12,9 @@ from langchain.pydantic_v1 import root_validator
 from langchain.tools.base import BaseTool
 from langchain.utils import get_from_dict_or_env
 import openjanus.tts.elevenlabs.async_patch as eleven_labs_async_patch
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 def _import_elevenlabs() -> Any:
@@ -107,7 +111,7 @@ class ElevenLabsText2SpeechTool(BaseTool):
 
     async def aprocess_message(self, query, save_message):
         elevenlabs = _import_elevenlabs()
-        print(query)
+        LOGGER.debug(query)
         # speech_stream = elevenlabs.generate(text=query, voice=self.voice, model=self.model, stream=True, latency=4)
         # audio = elevenlabs.stream(speech_stream)
         # if save_message:
@@ -156,7 +160,7 @@ class ElevenLabsText2SpeechTool(BaseTool):
                     if save_message_flag:
                         self.save_file(audio_bytes)
                     if chunk_text:
-                        print(chunk_text)
+                        LOGGER.debug(chunk_text)
                     elevenlabs.stream(iter([audio_bytes]))
                 except TypeError:
                     break

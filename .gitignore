@@ -1,2 +1,16 @@
 scratch.md
 .env
+.venv
+__pycache__/
+.vscode
+*.pyc
+build/
+*.egg-info/
+*.egg-info
+__pycache__
+venv
+.pdm-python
+.pdm-build
+settings.json
+.vscode
+.pdm.toml
