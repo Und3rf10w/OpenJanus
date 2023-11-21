@@ -1,7 +1,7 @@
 langchain
 # torch
 # transformers
-openai<=0.28.1
+openai==1.2.4
 elevenlabs
 tiktoken
 pyaudio

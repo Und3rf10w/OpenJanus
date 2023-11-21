@@ -30,7 +30,6 @@ class BaseOpenJanusConversationChain(ConversationChain):
         stream = self.invoke(input, config, **kwargs)
         tts = get_tool()
         tts.run({"query": stream['response']})
-        # yield stream
 
     async def aprocess(
         self,
@@ -44,10 +43,7 @@ class BaseOpenJanusConversationChain(ConversationChain):
         """
         stream = self.stream(input, config, **kwargs)
         tts = get_tool()
-        # loop = asyncio.get_event_loop()
-        # await loop.run_until_complete(tts.arun({"stream": stream}))
         response = await tts.arun({"stream": stream})
-        # yield stream
 
 
 def tts_agent_tool(**kwargs) -> Tool:

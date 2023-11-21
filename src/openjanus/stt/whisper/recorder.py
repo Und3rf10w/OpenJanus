@@ -8,9 +8,12 @@ import threading
 import wave
 
 from langchain.agents import AgentExecutor
-from langchain.document_loaders.parsers import OpenAIWhisperParser
+# from langchain.document_loaders.parsers import OpenAIWhisperParser
 from langchain.document_loaders.blob_loaders import Blob
 from langchain.schema import Document
+
+# This is to support oai package >=1.0.0
+from openjanus.stt.whisper.parser import OpenAIWhisperParser
 
 
 LOGGER = logging.getLogger(__name__)
