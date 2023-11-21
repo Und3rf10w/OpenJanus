@@ -1,6 +1,6 @@
 langchain
-torch
-transformers
+# torch
+# transformers
 openai<=0.28.1
 elevenlabs
 tiktoken

@@ -1,4 +1,5 @@
 import asyncio
+from csv import excel
 import logging
 import threading
 from pynput import keyboard
@@ -15,11 +16,8 @@ from openjanus.chains.prompt import BASE_AGENT_SYSTEM_PROMPT_PREFIX
 from openjanus.stt.whisper.recorder import Recorder
 
 
-logging.basicConfig(level=logging.DEBUG)
-
-
-# async def test_invoke(agent_chain: AgentExecutor):
-#     await agent_chain.ainvoke({"input":"Hello ATC, this is John Smith, on approach to Seraphim Station. Requesting permission to land, over.", "chat_history": []})
+logging.basicConfig(level=logging.INFO)
+LOGGER = logging.getLogger(__name__)
 
 
 async def main():
@@ -43,59 +41,53 @@ async def main():
         verbose=True
     )
     recorder = Recorder()
-    # # TODO: Make the selected key selectable from the config file
-    # with keyboard.Listener(
-    #     on_press=lambda event: recorder.start_recording() if isinstance(event, keyboard.KeyCode) and event.char == 'r' and not recorder.is_recording else None,
-    #     on_release=lambda event: threading.Thread(target=recorder.stop_recording).start() if isinstance(event, keyboard.KeyCode) and event.char == 'r' else None
-    # ) as listener:
-    #     try:
-    #         while True:
-    #             await asyncio.sleep(0.1)  # Allows asyncio to yield control to other tasks
-    #     except KeyboardInterrupt:
-    #         logging.WARN("User requested exit")
-    #     listener.join()
-    def on_release(event):
-        if isinstance(event, keyboard.KeyCode) and event.char == 'r':
-            threading.Thread(target=recorder.stop_recording).start()
-            # After stopping, transcribe and invoke using a separate thread
-            threading.Thread(target=recorder.transcribe_and_invoke, args=(agent_chain,)).start()     
+    # TODO: Make the selected key selectable from the config file
+    class KeyListener:
+        def __init__(self, recorder: Recorder, agent_chain: AgentExecutor):
+            self.recorder = recorder
+            self.agent_chain = agent_chain
+            self.record_key_pressed = False
 
+        def on_press(self, key):
+            try:
+                if key == keyboard.Key.f12 and not self.recorder.is_recording:
+                    LOGGER.info("Record button pressed")
+                    self.recorder.start_recording()
+            except AttributeError:
+                pass
+
+        def on_release(self, key):
+            try:
+                if key == keyboard.Key.f12 and self.recorder.is_recording:
+                    LOGGER.info("Recording button released")
+                    recording_path = self.recorder.stop_recording()
+                    threading.Thread(target=self.recorder.transcribe_and_invoke, args=(self.agent_chain,recording_path,)).start()
+                    self.record_key_pressed = False
+            except Exception as e:
+                LOGGER.error("Raised an error when stopping recording", exc_info=e)
+
+
+
+    key_listener = KeyListener(recorder, agent_chain)
     with keyboard.Listener(
-        on_press=lambda event: recorder.start_recording() if isinstance(event, keyboard.KeyCode) and event.char == 'r' and not recorder.is_recording else None,
-        on_release=on_release
+        on_press=key_listener.on_press,
+        on_release=key_listener.on_release,
+        suppress=False
     ) as listener:
-        try:
-            while True:
-                await asyncio.sleep(0.1)  # Allows asyncio to yield control to other tasks
-        except KeyboardInterrupt:
-            logging.WARN("User requested exit")
         listener.join()
 
 
 if __name__ == "__main__":
-    # chat_llm = ChatOpenAI(
-    #     model="gpt-3.5-turbo-1106",
-    #     temperature=0.5,
-    #     streaming=True,
-    #     verbose=True
-    # )
-    # memory = ConversationSummaryBufferMemory(llm=chat_llm, return_messages=True)
-    # chat_agent = ConversationalChatAgent.from_llm_and_tools(
-    #     llm=chat_llm,
-    #     tools=get_openjanus_tools(llm=chat_llm),
-    #     system_message=BASE_AGENT_SYSTEM_PROMPT_PREFIX,
-    #     verbose=True
-    # )
-    # agent_chain = AgentExecutor.from_agent_and_tools(
-    #     tools=get_openjanus_tools(llm=chat_llm),
-    #     llm=chat_llm,
-    #     agent=chat_agent,
-    #     verbose=True
-    # )
+   
     # TODO: Run app here
     # Async invoking the chain:
     # asyncio.run(test_invoke(agent_chain))
     # Invoking the chain:
     # agent_chain.invoke({"input":"Hello ATC, this is John Smith, on approach to Seraphim Station. Requesting permission to land, over.", "chat_history": []})
-    asyncio.run(main())
-    print("done")
+    # asyncio.run(main())
+    # print("done")
+    loop = asyncio.get_event_loop()
+    try:
+        loop.run_until_complete(main())
+    finally:
+        loop.close()
