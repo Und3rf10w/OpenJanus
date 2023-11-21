@@ -1,13 +1,14 @@
-from langchain.chains import ConversationChain
+
 from langchain.prompts import SystemMessagePromptTemplate, ChatPromptTemplate, BasePromptTemplate, HumanMessagePromptTemplate
 
+from openjanus.chains.base import BaseOpenJanusConversationChain
 from openjanus.chains.atc.prompt import (
     ATC_SYSTEM_PROMPT,
     ATC_USER_PROMPT
 )
 
 
-class AtcChain(ConversationChain):
+class AtcChain(BaseOpenJanusConversationChain):
     """
     A chain for acting like an Air Traffic Controller
     """

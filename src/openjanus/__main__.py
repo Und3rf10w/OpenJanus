@@ -5,7 +5,11 @@ from langchain.chat_models import ChatOpenAI
 from langchain.agents import AgentExecutor
 from langchain.agents.conversational_chat.base import ConversationalChatAgent
 
-from openjanus.toolkits.toolkit import get_openjanus_tools, get_elevenlabs_tts_tool
+from openjanus.toolkits.toolkit import get_openjanus_tools
+
+
+async def test_invoke(agent_chain):
+    await agent_chain.ainvoke({"input":"Hello ATC, this is John Smith, on approach to Seraphim Station. Requesting permission to land, over.", "chat_history": []})
 
 
 if __name__ == "__main__":
@@ -28,8 +32,8 @@ if __name__ == "__main__":
         verbose=True
     )
     # TODO: Run app here
-    stream = agent_chain.invoke({"input":"Hello ATC, this is John Smith, on approach to Seraphim Station. Requesting permission to land, over.", "chat_history": []})
-    tts = get_elevenlabs_tts_tool()
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(tts.arun({"stream": stream['output']}))
+    # Async invoking the chain:
+    # asyncio.run(test_invoke(agent_chain))
+    # Invoking the chain:
+    agent_chain.invoke({"input":"Hello ATC, this is John Smith, on approach to Seraphim Station. Requesting permission to land, over.", "chat_history": []})
     print("done")

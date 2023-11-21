@@ -77,7 +77,7 @@ def get_tool() -> ElevenLabsText2SpeechTool:
 
 #     # chain = ...
 
-#     loop = asyncio.get_event_loop()
+    # loop = asyncio.get_event_loop()
 
 #     try:
 #         if stream:

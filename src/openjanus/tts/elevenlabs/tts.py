@@ -75,17 +75,18 @@ class ElevenLabsText2SpeechTool(BaseTool):
         elevenlabs.save(raw_audio, f"{formatted_dt}_{self.voice.voice_id}_chat.mp3")
 
     def _run(
-        self, query: str, run_manager: Optional[CallbackManagerForToolRun] = None
+        self, query, run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> str:
         """Use the tool."""
         elevenlabs = _import_elevenlabs()
         try:
             speech = elevenlabs.generate(text=query, model=self.model, voice=self.voice)
-            with tempfile.NamedTemporaryFile(
-                mode="bx", suffix=".wav", delete=False
-            ) as f:
-                f.write(speech)
-            return f.name
+            elevenlabs.play(speech)
+            # with tempfile.NamedTemporaryFile(
+            #     mode="bx", suffix=".wav", delete=False
+            # ) as f:
+            #     f.write(speech)
+            # return f.name
         except Exception as e:
             raise RuntimeError(f"Error while running ElevenLabsText2SpeechTool: {e}")
         
@@ -154,7 +155,7 @@ class ElevenLabsText2SpeechTool(BaseTool):
         for future in asyncio.as_completed(tasks):
             result = await future  # result is not used in this case
 
-    async def astream_speech_from_stream(self, text_stream: Generator, chunk_size: int = 1000, save_message: bool = False) -> None:
+    async def astream_speech_from_stream(self, text_stream, chunk_size: int = 1000, save_message: bool = False) -> None:
         """
         Play a text stream with TTS
 
@@ -166,9 +167,9 @@ class ElevenLabsText2SpeechTool(BaseTool):
         # Define a function to process messages in chunks
         def chunk_messages(messages, chunk_size):
             chunk = []
-            for message in messages:
+            for message in messages['response']:
                 # chunk.append(message.content)
-                chunk.append(message['response'])
+                chunk.append(message)
                 if len(chunk) == chunk_size:
                     yield ''.join(chunk)
                     chunk = []

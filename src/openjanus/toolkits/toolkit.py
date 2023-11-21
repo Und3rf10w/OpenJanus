@@ -9,7 +9,6 @@ from langchain.tools import Tool
 
 from openjanus.chains.atc.base import AtcChain
 from openjanus.chains.onboardia.base import OnboardIaChain
-from openjanus.tts.elevenlabs.chat import get_tool as get_elevenlabs_tts_tool
 
 
 def atc_chain_tool(llm: BaseLanguageModel, memory: BaseMemory, **kwargs) -> Tool:
@@ -30,6 +29,7 @@ def atc_chain_tool(llm: BaseLanguageModel, memory: BaseMemory, **kwargs) -> Tool
         func=atc_chain.stream,
         coroutine=atc_chain.astream,
         return_direct=True,
+        verbose=True,
         **kwargs
     )
     return atc_tool
@@ -53,27 +53,10 @@ def onboard_ia_chain_tool(llm: BaseLanguageModel, memory: BaseMemory, **kwargs) 
         func=onboard_ia_chain.stream,
         coroutine=onboard_ia_chain.astream,
         return_direct=True,
+        verbose=True,
         **kwargs
     )
     return onboard_ia_tool
-
-
-def tts_agent_tool(**kwargs) -> Tool:
-    """
-    Speak an output. Always run this tool last
-
-    :return: A tool to use with text to speech
-    """
-    from openjanus.tts.elevenlabs.async_patch import DEFAULT_VOICE
-    imported_tts_tool = get_elevenlabs_tts_tool() # TODO: Set voice from config
-    tts_tool = Tool(
-        name=imported_tts_tool.name,
-        description=imported_tts_tool.description,
-        func=imported_tts_tool.play,
-        coroutine=imported_tts_tool.astream_speech_from_stream,
-        **kwargs
-    )
-    return tts_tool
 
 
 def get_openjanus_tools(llm:BaseChatModel) -> list:
