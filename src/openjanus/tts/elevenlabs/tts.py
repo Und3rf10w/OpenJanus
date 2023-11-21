@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 import logging
 import tempfile
-from typing import Any, Dict, Optional, Union, Iterator
+from typing import Any, Coroutine, Dict, Optional, Union, Iterator, Generator
 
 import asyncio
 
@@ -48,7 +48,7 @@ class ElevenLabsText2SpeechTool(BaseTool):
 
     model: Union[ElevenLabsModel, str] = ElevenLabsModel.MULTI_LINGUAL_V2
 
-    name: str = "eleven_labs_flex_text2speech"
+    name: str = "eleven_labs_text2speech"
     description: str = (
         "A wrapper around Eleven Labs Text2Speech. "
         "Useful for when you need to convert text to speech. "
@@ -71,7 +71,7 @@ class ElevenLabsText2SpeechTool(BaseTool):
             raw_audio = audio
         elevenlabs = _import_elevenlabs()
         now = datetime.now()
-        formatted_dt = now.strftime("%Y%m%d_%H%M%S")
+        formatted_dt = now.strftime(format="%Y%m%d_%H%M%S")
         elevenlabs.save(raw_audio, f"{formatted_dt}_{self.voice.voice_id}_chat.mp3")
 
     def _run(
@@ -88,11 +88,28 @@ class ElevenLabsText2SpeechTool(BaseTool):
             return f.name
         except Exception as e:
             raise RuntimeError(f"Error while running ElevenLabsText2SpeechTool: {e}")
+        
+    async def _arun(self, stream, **kwargs: Any) -> Coroutine[Any, Any, Any]:
+        """Play text to speech from a stream"""
+        try:
+            await self.astream_speech_from_stream(
+                text_stream=stream,
+                chunk_size=100,
+                save_message=False,
+            )
+        except Exception as e:
+            raise RuntimeError(f"Error while running ElevenLabsText2SpeechTool: {e}")
+    
 
 
 
     def play(self, query: str, save_message: bool = False) -> None:
-        """Play the text as speech."""
+        """
+        Play the speech as text
+
+        :param query: The speech to play
+        :param save_message: Whether to save the generated text, defaults to False
+        """
         elevenlabs = _import_elevenlabs()
         audio = elevenlabs.generate(text=query, voice=self.voice, model=self.model, stream=False, latency=2)
         elevenlabs.play(audio)
@@ -137,14 +154,21 @@ class ElevenLabsText2SpeechTool(BaseTool):
         for future in asyncio.as_completed(tasks):
             result = await future  # result is not used in this case
 
-    async def astream_speech_from_stream(self, text_stream, chunk_size: int = 1000, save_message: bool = False) -> None:
+    async def astream_speech_from_stream(self, text_stream: Generator, chunk_size: int = 1000, save_message: bool = False) -> None:
+        """
+        Play a text stream with TTS
+
+        :param text_stream: The text stream generator object to use
+        :param chunk_size: The size of chunks to generate audio for, defaults to 1000, you don't need to provide this
+        :param save_message: Whether to save the message, defaults to False, you don't need to provide this
+        """
         elevenlabs = _import_elevenlabs()
         # Define a function to process messages in chunks
         def chunk_messages(messages, chunk_size):
             chunk = []
             for message in messages:
                 # chunk.append(message.content)
-                chunk.append(message)
+                chunk.append(message['response'])
                 if len(chunk) == chunk_size:
                     yield ''.join(chunk)
                     chunk = []
