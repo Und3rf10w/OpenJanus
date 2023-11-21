@@ -1,5 +1,5 @@
 import asyncio
-from csv import excel
+
 import logging
 import threading
 from pynput import keyboard
