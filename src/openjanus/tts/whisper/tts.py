@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 import logging
 import pathlib
@@ -75,8 +76,45 @@ class OpenAIWhisperSpeaker(BaseTool):
         mpv_process.wait()
 
         return audio
+    
+    # Ripped from elevenlabs
+    def play(self, audio: bytes, notebook: bool = False, use_ffmpeg: bool = True) -> None:
+        if notebook:
+            from IPython.display import Audio, display
 
-    def _run(self, text: str, *args: Any, **kwargs: Any) -> Any:
+            display(Audio(audio, rate=44100, autoplay=True))
+        elif use_ffmpeg:
+            if not self.is_installed("ffplay"):
+                message = (
+                    "ffplay from ffmpeg not found, necessary to play audio. "
+                    "On mac you can install it with 'brew install ffmpeg'. "
+                    "On linux and windows you can install it from https://ffmpeg.org/"
+                )
+                raise ValueError(message)
+            args = ["ffplay", "-autoexit", "-", "-nodisp"]
+            proc = subprocess.Popen(
+                args=args,
+                stdout=subprocess.PIPE,
+                stdin=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            out, err = proc.communicate(input=audio)
+            proc.poll()
+        else:
+            try:
+                import io
+
+                import sounddevice as sd
+                import soundfile as sf
+            except ModuleNotFoundError:
+                message = (
+                    "`pip install sounddevice soundfile` required when `use_ffmpeg=False` "
+                )
+                raise ValueError(message)
+            sd.play(*sf.read(io.BytesIO(audio)))
+            sd.wait()
+
+    def _run(self, query: str, *args: Any, **kwargs: Any) -> Any:
         import io
 
         try:
@@ -98,7 +136,7 @@ class OpenAIWhisperSpeaker(BaseTool):
             response = openai.audio.speech.create(
                 model=self.voice_model,
                 voice=self.voice_id,
-                input=text
+                input=query
             )
             # Write the response to a file directly, not used, but left here for prosperity
             # response.stream_to_file(self.output_file_path)
@@ -116,8 +154,73 @@ class OpenAIWhisperSpeaker(BaseTool):
         except Exception as e:
             LOGGER.error("Error received while doing OpenAI Whisper TTS", exc_info=e)
 
-    async def _arun(self, text: str, *args: Any, **kwargs: Any) -> Any:
-        # It's going to be the same either way
-        # TODO: See if we need to consume the stream from an iterator here? Perhaps text should be a union.
-        output_path = self._run(text=text, *args, **kwargs)
-        return output_path
+    async def _arun(self, stream, *args: Any, **kwargs: Any) -> Any:
+        import io
+
+        try:
+            import openai
+        except ImportError:
+            raise ImportError(
+                "openai package not found, please install it with "
+                "`pip install openai`"
+            )
+        
+        # Set the API key if provided
+        if self.api_key:
+            openai.api_key = self.api_key
+        
+        # TODO: Set from config
+        self.set_recording_path()
+
+        # TODO: Consume from stream
+        # Define a function to process messages in chunks
+        def chunk_messages(messages, chunk_size):
+            chunk = []
+            for message in messages:
+                chunk.append(message['response'])
+                # chunk.append(message)
+                if len(chunk) == chunk_size:
+                    yield ''.join(chunk)
+                    chunk = []
+            if chunk:
+                yield ''.join(chunk)
+        
+        async def process_audio(queue: asyncio.Queue):
+            while True:
+                try:
+                    audio_bytes, chunk_text, save_message_flag = await queue.get()
+                    LOGGER.info("Playing audio...")
+                    if audio_bytes is None:
+                        break
+                    # Write the response to a file
+                    LOGGER.debug(f"Wrote response to {self.output_file_path}")
+                    if chunk_text:
+                        LOGGER.debug(chunk_text)
+                    self.stream_audio(audio_stream=iter([audio_bytes]))
+                    LOGGER.info("Ending audio stream")
+                    with open(self.output_file_path, 'wb') as f:
+                        f.write(audio_bytes)
+                except TypeError:
+                    break
+
+        async def process_chunks(chunk_text):
+            audio_bytes = []
+            async for chunk in openai.audio.speech.create(
+                model=self.voice_model,
+                voice=self.voice_id,
+                input=chunk
+            ).iter_bytes():
+                audio_bytes.append(chunk)
+            audio = b''.join(audio_bytes)
+            await queue.put((audio, chunk_text))
+
+        queue = asyncio.Queue()
+        audio_task = asyncio.create_task(process_audio(queue))
+
+        tasks = []
+        for combined_message in chunk_messages(stream):
+            tasks.append(asyncio.create_task(process_chunks(combined_message)))
+
+        await asyncio.gather(*tasks)
+        await queue.put(None)
+        await audio_task
