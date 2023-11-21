@@ -21,9 +21,9 @@ def atc_chain_tool(llm: BaseLanguageModel, memory: BaseMemory, **kwargs) -> Tool
         memory=memory
     )
     atc_tool = Tool(
-        name="Reply as an Air-Traffic-Controller",
+        name="Reply_ATC",
         description="Use this tool when assuming the role of an Air Traffic Controller",
-        func=atc_chain.call,
+        func=atc_chain.run,
         coroutine=atc_chain.arun,
         return_direct=True,
         **kwargs
@@ -44,7 +44,7 @@ def onboard_ia_chain_tool(llm: BaseLanguageModel, memory: BaseMemory, **kwargs) 
         memory=memory
     )
     onboard_ia_tool = Tool(
-        name="Reply as the ship's onboard intelligent assistant",
+        name="Reply_Onboard_IA",
         description="Use this tool when assuming the role of an Onboard-Ship IA",
         func=onboard_ia_chain.run,
         coroutine=onboard_ia_chain.arun,
@@ -63,10 +63,10 @@ def get_openjanus_tools(llm:BaseChatModel) -> list:
     """
     tools = []
     try:
-        tools.append(
-            atc_chain_tool(llm=llm, memory=ConversationSummaryBufferMemory(return_messages=True)),
-            onboard_ia_chain_tool(llm=llm, memory=ConversationSummaryBufferMemory(return_messages=True))
-        )
+        tools = [
+            atc_chain_tool(llm=llm, memory=ConversationSummaryBufferMemory(llm=llm, return_messages=True, memory_key="chat_history")),
+            onboard_ia_chain_tool(llm=llm, memory=ConversationSummaryBufferMemory(llm=llm, return_messages=True, memory_key="chat_history"))
+        ]
     except ImportError:
         pass
     return tools
