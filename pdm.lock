@@ -6,7 +6,7 @@ groups = ["default"]
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:5ec472c829ba593f748cd0b6694fca7bc40349df28889baecb90839345a7ff2b"
+content_hash = "sha256:af31d4e365d6a871cc1fc64b98a7d9fa2c14dc34fe43d7cc48768dc10896b032"
 
 [[package]]
 name = "aiohttp"
@@ -219,6 +219,14 @@ dependencies = [
 files = [
     {file = "elevenlabs-0.2.26-py3-none-any.whl", hash = "sha256:a3cf8a09157b490cef9a1298957ac120a3e51fbd52282834c463030ba7ccd717"},
     {file = "elevenlabs-0.2.26.tar.gz", hash = "sha256:1bb4f1074ac8b1c2a7d440dcb43dd122c0f183381901ecbcbccfe7e165c0a3aa"},
+]
+
+[[package]]
+name = "evdev"
+version = "1.6.1"
+summary = "Bindings to the Linux input handling subsystem"
+files = [
+    {file = "evdev-1.6.1.tar.gz", hash = "sha256:299db8628cc73b237fc1cc57d3c2948faa0756e2a58b6194b5bf81dc2081f1e3"},
 ]
 
 [[package]]
@@ -866,6 +874,15 @@ files = [
 ]
 
 [[package]]
+name = "pydub"
+version = "0.25.1"
+summary = "Manipulate audio with an simple and easy high level interface"
+files = [
+    {file = "pydub-0.25.1-py2.py3-none-any.whl", hash = "sha256:65617e33033874b59d87db603aa1ed450633288aefead953b30bded59cb599a6"},
+    {file = "pydub-0.25.1.tar.gz", hash = "sha256:980a33ce9949cab2a569606b65674d748ecbca4f0796887fd6f46173a7b0d30f"},
+]
+
+[[package]]
 name = "pygments"
 version = "2.17.1"
 requires_python = ">=3.7"
@@ -873,6 +890,90 @@ summary = "Pygments is a syntax highlighting package written in Python."
 files = [
     {file = "pygments-2.17.1-py3-none-any.whl", hash = "sha256:1b37f1b1e1bff2af52ecaf28cc601e2ef7077000b227a0675da25aef85784bc4"},
     {file = "pygments-2.17.1.tar.gz", hash = "sha256:e45a0e74bf9c530f564ca81b8952343be986a29f6afe7f5ad95c5f06b7bdf5e8"},
+]
+
+[[package]]
+name = "pynput"
+version = "1.7.6"
+summary = "Monitor and control user input devices"
+dependencies = [
+    "evdev>=1.3; \"linux\" in sys_platform",
+    "pyobjc-framework-ApplicationServices>=8.0; sys_platform == \"darwin\"",
+    "pyobjc-framework-Quartz>=8.0; sys_platform == \"darwin\"",
+    "python-xlib>=0.17; \"linux\" in sys_platform",
+    "six",
+]
+files = [
+    {file = "pynput-1.7.6-py2.py3-none-any.whl", hash = "sha256:19861b2a0c430d646489852f89500e0c9332e295f2c020e7c2775e7046aa2e2f"},
+    {file = "pynput-1.7.6.tar.gz", hash = "sha256:3a5726546da54116b687785d38b1db56997ce1d28e53e8d22fc656d8b92e533c"},
+]
+
+[[package]]
+name = "pyobjc-core"
+version = "10.0"
+requires_python = ">=3.8"
+summary = "Python<->ObjC Interoperability Module"
+files = [
+    {file = "pyobjc-core-10.0.tar.gz", hash = "sha256:3dd0a7b3acd7e0b8ffd3f5331b29a3aaebe79a03323e61efeece38627a6020b3"},
+    {file = "pyobjc_core-10.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:99b72cda4593e0c66037b25a178f2bcc6efffb6d5d9dcd477ecca859a1f9ae8e"},
+    {file = "pyobjc_core-10.0-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:2843ca32e86a01ccee67d7ad82a325ddd72d754929d1f2c0d96bc8741dc9af09"},
+]
+
+[[package]]
+name = "pyobjc-framework-applicationservices"
+version = "10.0"
+requires_python = ">=3.8"
+summary = "Wrappers for the framework ApplicationServices on macOS"
+dependencies = [
+    "pyobjc-core>=10.0",
+    "pyobjc-framework-Cocoa>=10.0",
+    "pyobjc-framework-Quartz>=10.0",
+]
+files = [
+    {file = "pyobjc-framework-ApplicationServices-10.0.tar.gz", hash = "sha256:8a667da95c09202def58746c42d5093f90be5762a52e6f5ad8beb334b51dca20"},
+    {file = "pyobjc_framework_ApplicationServices-10.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:ebbe656c8b1a8fb3880d47ebef5cb7c95b9a646c84bc369cf132347dc4754143"},
+    {file = "pyobjc_framework_ApplicationServices-10.0-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:9cf969781616261ec7a2c427120a9fb4ac861e62bc2854de6cabdd2e4ea47141"},
+]
+
+[[package]]
+name = "pyobjc-framework-cocoa"
+version = "10.0"
+requires_python = ">=3.8"
+summary = "Wrappers for the Cocoa frameworks on macOS"
+dependencies = [
+    "pyobjc-core>=10.0",
+]
+files = [
+    {file = "pyobjc-framework-Cocoa-10.0.tar.gz", hash = "sha256:723421eff4f59e4ca9a9bb8ec6dafbc0f778141236fa85a49fdd86732d58a74c"},
+    {file = "pyobjc_framework_Cocoa-10.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:0187cba228976a45f41116c74aab079b64bacb3ffc3c886a4bd8e472bf9be581"},
+    {file = "pyobjc_framework_Cocoa-10.0-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:a81dabdc40268591e3196087388e680c6570fed1b521df9b04733cb3ece0414e"},
+]
+
+[[package]]
+name = "pyobjc-framework-quartz"
+version = "10.0"
+requires_python = ">=3.8"
+summary = "Wrappers for the Quartz frameworks on macOS"
+dependencies = [
+    "pyobjc-core>=10.0",
+    "pyobjc-framework-Cocoa>=10.0",
+]
+files = [
+    {file = "pyobjc-framework-Quartz-10.0.tar.gz", hash = "sha256:ff7c938d9c8adff87d577d63e58f9be6e4bc75274384715fa7a20032a1ce8b0e"},
+    {file = "pyobjc_framework_Quartz-10.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:52848a5e283a508c6895a73cb0c950bd4dca9b1186b70dd73ddc8f436d64fd42"},
+    {file = "pyobjc_framework_Quartz-10.0-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:f0cc89890de411a341e90d2c4148831b6d241fca66e734b5470d27869c04e33c"},
+]
+
+[[package]]
+name = "python-xlib"
+version = "0.33"
+summary = "Python X Library"
+dependencies = [
+    "six>=1.10.0",
+]
+files = [
+    {file = "python-xlib-0.33.tar.gz", hash = "sha256:55af7906a2c75ce6cb280a584776080602444f75815a7aff4d287bb2d7018b32"},
+    {file = "python_xlib-0.33-py2.py3-none-any.whl", hash = "sha256:c3534038d42e0df2f1392a1b30a15a4ff5fdc2b86cfa94f072bf11b10a164398"},
 ]
 
 [[package]]

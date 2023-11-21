@@ -12,6 +12,8 @@ dependencies = [
     "openai<=0.28.1",
     "elevenlabs",
     "tiktoken>=0.5.1",
+    "pydub>=0.25.1",
+    "pynput>=1.7.6",
 ]
 requires-python = ">=3.11.6"
 readme = "README.md"

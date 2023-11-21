@@ -14,3 +14,4 @@ venv
 settings.json
 .vscode
 .pdm.toml
+recordings/*
