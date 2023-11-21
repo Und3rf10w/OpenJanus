@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from typing import Iterator, Optional, Any, AsyncIterator
 
 from langchain.chains import ConversationChain
@@ -12,8 +13,11 @@ from langchain.tools import Tool
 from openjanus.tts.elevenlabs.chat import get_tool
 
 
+LOGGER = logging.getLogger(__name__)
+
+
 class BaseOpenJanusConversationChain(ConversationChain):
-    def stream(
+    def process(
         self,
         input: Input,
         config: Optional[RunnableConfig] = None,
@@ -28,7 +32,7 @@ class BaseOpenJanusConversationChain(ConversationChain):
         tts.run({"query": stream['response']})
         # yield stream
 
-    async def astream(
+    async def aprocess(
         self,
         input: Input,
         config: Optional[RunnableConfig] = None,
@@ -38,11 +42,11 @@ class BaseOpenJanusConversationChain(ConversationChain):
         Default implementation of astream, which calls ainvoke.
         Subclasses should override this method if they support streaming output.
         """
-        stream = self.invoke(input, config, **kwargs)
+        stream = self.stream(input, config, **kwargs)
         tts = get_tool()
         # loop = asyncio.get_event_loop()
         # await loop.run_until_complete(tts.arun({"stream": stream}))
-        await tts.arun({"stream": stream})
+        response = await tts.arun({"stream": stream})
         # yield stream
 
 

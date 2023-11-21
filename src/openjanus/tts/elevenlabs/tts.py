@@ -167,9 +167,9 @@ class ElevenLabsText2SpeechTool(BaseTool):
         # Define a function to process messages in chunks
         def chunk_messages(messages, chunk_size):
             chunk = []
-            for message in messages['response']:
-                # chunk.append(message.content)
-                chunk.append(message)
+            for message in messages:
+                chunk.append(message['response'])
+                # chunk.append(message)
                 if len(chunk) == chunk_size:
                     yield ''.join(chunk)
                     chunk = []
@@ -180,6 +180,7 @@ class ElevenLabsText2SpeechTool(BaseTool):
             while True:
                 try:
                     audio_bytes, chunk_text, save_message_flag = await queue.get()
+                    LOGGER.info("Playing audio...")
                     if audio_bytes is None:
                         break
                     if save_message_flag:
@@ -187,6 +188,7 @@ class ElevenLabsText2SpeechTool(BaseTool):
                     if chunk_text:
                         LOGGER.debug(chunk_text)
                     elevenlabs.stream(iter([audio_bytes]))
+                    LOGGER.info("Ending audio stream")
                 except TypeError:
                     break
 

@@ -25,9 +25,9 @@ def atc_chain_tool(llm: BaseLanguageModel, memory: BaseMemory, **kwargs) -> Tool
     )
     atc_tool = Tool(
         name="Reply_ATC",
-        description="Use this tool when assuming the role of an Air Traffic Controller",
-        func=atc_chain.stream,
-        coroutine=atc_chain.astream,
+        description="Use this tool to assume the role of an Air Traffic Controller. Pass the user's entire question unaltertered to this tool.",
+        func=atc_chain.process,
+        coroutine=atc_chain.aprocess,
         return_direct=True,
         verbose=True,
         **kwargs
@@ -49,9 +49,9 @@ def onboard_ia_chain_tool(llm: BaseLanguageModel, memory: BaseMemory, **kwargs) 
     )
     onboard_ia_tool = Tool(
         name="Reply_Onboard_IA",
-        description="Use this tool when assuming the role of an Onboard-Ship IA",
-        func=onboard_ia_chain.stream,
-        coroutine=onboard_ia_chain.astream,
+        description="Use this tool to assume the role of an Onboard-Ship IA. Pass the user's entire question unaltertered to this tool.",
+        func=onboard_ia_chain.process,
+        coroutine=onboard_ia_chain.aprocess,
         return_direct=True,
         verbose=True,
         **kwargs
