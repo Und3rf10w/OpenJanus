@@ -27,7 +27,7 @@ async def main():
         streaming=True,
         verbose=True
     )
-    memory = ConversationSummaryBufferMemory(llm=chat_llm, return_messages=True)
+    # memory = ConversationSummaryBufferMemory(llm=chat_llm, return_messages=True, memory_key="chat_history")
     chat_agent = ConversationalChatAgent.from_llm_and_tools(
         llm=chat_llm,
         tools=get_openjanus_tools(llm=chat_llm),
