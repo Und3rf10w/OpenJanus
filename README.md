@@ -18,6 +18,9 @@ OpenJanus works like so:
 - [ ] Integration with sc-trade.tools
 - [ ] Integration with cstone.space
 
+# How?
+First, set your `OPENAI_API_KEY` and `ELEVEN_API_KEY` in your environment. Next, install the project and its dependences. Run `__main__.py`, then press and hold F12, and speak into your microphone.
+
 # Why?
 I see [videos like this](https://www.youtube.com/watch?v=hHy7OZQX_nQ) and they weren't released as open source at the time.
 
