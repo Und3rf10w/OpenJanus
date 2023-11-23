@@ -9,10 +9,14 @@ OpenJanus works like so:
 
 # Features
 - ATC
-- Onboard Ship IA capable of executing commands on the ship (e.g. "turn on my ship's lights)
-- Integration with sc-trade.tools
-- Integration with cstone.space
+- Onboard Ship IA capable of executing commands on the ship (e.g. "turn on my ship's lights")
 - ???
+
+# Roadmap
+- [ ] Easier configuration and installation
+- [ ] Documentation
+- [ ] Integration with sc-trade.tools
+- [ ] Integration with cstone.space
 
 # Why?
 I see [videos like this](https://www.youtube.com/watch?v=hHy7OZQX_nQ) and they weren't released as open source at the time.
