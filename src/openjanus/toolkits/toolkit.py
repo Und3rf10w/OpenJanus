@@ -68,7 +68,7 @@ def onboard_ia_chain_tool(llm: BaseLanguageModel, memory: BaseMemory, **kwargs) 
     :param memory: the memory object to use
     :return: A tool with the onboard ship IA
     """
-    onboard_ia_chain = create_parallel_onboard_ia_chain(llm=llm, memory=memory, verbose=True, callbacks=[AsyncOpenJanusChainCallbackHandler, OpenJanusChainCallbackHandler])
+    onboard_ia_chain = create_parallel_onboard_ia_chain(llm=llm, memory=memory, verbose=True, callbacks=[AsyncOpenJanusChainCallbackHandler(), OpenJanusChainCallbackHandler()])
     onboard_ia_tool = Tool(
         name="Reply_Onboard_IA",
         description="Use this tool to assume the role of an Onboard-Ship IA. Pass the user's entire question unaltertered to this tool.",
