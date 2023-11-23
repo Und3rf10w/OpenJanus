@@ -88,9 +88,9 @@ class OpenJanusChainCallbackHandler(BaseCallbackHandler):
         **kwargs: Any,
     ) -> None:
         """Run when chain ends running."""
-        outputs['response']
-        tts = get_tool()
-        tts.run({"query": outputs['response']})
+        # outputs['response']
+        # tts = get_tool()
+        # tts.run({"query": outputs['response']})
 
 
 class AsyncOpenJanusChainCallbackHandler(BaseCallbackHandler):

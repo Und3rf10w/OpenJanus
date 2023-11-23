@@ -127,6 +127,12 @@ def run(input: str, keypresses: list):
             LOGGER.info(f"Onboard IA: {keypresses['action_name']} completed")
             return f"Actions {keypresses['action_name']} completed. User asked: {input}"
         if "actions" in keypresses:
+            if isinstance(keypresses['actions'], list):
+                for action in keypresses['actions']:
+                    LOGGER.info(f"Onboard IA: Performing {action['action_name']}")
+                    perform_action(action)
+                    LOGGER.info(f"Onboard IA: {action['action_name']} completed")
+                return f"Actions {[action['action_name'] for action in keypresses['actions']]} Completed Successfully"
             LOGGER.info(f"Onboard IA: Performing {keypresses['actions']['action_name']}")
             perform_action(keypresses['actions'])
             LOGGER.info(f"Onboard IA: {keypresses['actions']['action_name']} completed")

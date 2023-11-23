@@ -123,23 +123,23 @@ These controls are related to salvage systems
 Your output should be a JSON dictionary of dictionaries wrapped in a markdown language block in the following format:
 ```json
 {{
-    {{
-      "actions":
+     "actions":
+     [
         {{
           "keys": ["a single entry"],
           "mouse": {{"button": "left or right or middle", "clicks": 1, "hold": false}},
           "hold": false
           "action_name": "The name of the action"
         }}
-    }}
+      ]
 }}
 ```
 
 For example, here are two separate actions (combining a user's request into multiple actions):
 ```json
 {{
-    {{
       "actions":
+      [
         {{
           "keys": ["g"],
           "hold": false,
@@ -151,7 +151,7 @@ For example, here are two separate actions (combining a user's request into mult
           "hold": true,
           "action_name": "Relative Beam Spacing"
         }}
-    }}
+      ]
 }}
 ```
 

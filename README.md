@@ -10,6 +10,7 @@ OpenJanus works like so:
 # Features
 - ATC
 - Onboard Ship IA capable of executing commands on the ship (e.g. "turn on my ship's lights")
+- Use whatever models you want (technically this is easy with Langchain, but prompting is on you)
 - ???
 
 # Roadmap
@@ -17,6 +18,7 @@ OpenJanus works like so:
 - [ ] Documentation
 - [ ] Integration with sc-trade.tools
 - [ ] Integration with cstone.space
+- [ ] Tests (lol)
 
 # How?
 First, set your `OPENAI_API_KEY` and `ELEVEN_API_KEY` in your environment. Next, install the project and its dependences. Run `__main__.py`, then press and hold F12, and speak into your microphone.
