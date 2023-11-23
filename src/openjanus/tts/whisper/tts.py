@@ -22,13 +22,20 @@ class OpenAIWhisperSpeaker(BaseTool):
     Speech generation is with the OpenAI Whisper model."""
     name: str = "OpenAI_Whisper_Speech_to_Text"
     description: str = """Use this tool to speak a response. Pass the entire input unaltered to this tool."""
+    api_key: Optional[str]
+    voice_id: Optional[str] = "nova"
+    voice_model: Optional[Union[Literal["tts-1"], Literal["tts-1-hd"]]]
+    output_file_path: Optional[str] = ""
 
     def __init__(
             self, 
             api_key: Optional[str] = None, 
             voice_id: Optional[str] = "nova",
-            voice_model: Optional[Union[Literal["tts-1"], Literal["tts-1-hd"]]] = "tts-1"
+            voice_model: Optional[Union[Literal["tts-1"], Literal["tts-1-hd"]]] = "tts-1",
+            *args,
+            **kwargs
         ) -> None:
+        super().__init__(*args, **kwargs)
         self.api_key = api_key
         self.voice_id = voice_id
         self.voice_model = voice_model
@@ -174,7 +181,7 @@ class OpenAIWhisperSpeaker(BaseTool):
 
         # TODO: Consume from stream
         # Define a function to process messages in chunks
-        def chunk_messages(messages, chunk_size):
+        def chunk_messages(messages, chunk_size=100):
             chunk = []
             for message in messages:
                 chunk.append(message['response'])
