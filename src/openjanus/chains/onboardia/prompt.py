@@ -5,8 +5,12 @@ ONBOARD_IA_SYSTEM_PROMPT = "You are an intelligence assistant onboard a space sh
 ONBOARD_IA_USER_PROMPT = """Conversation History: {chat_history}
 User: {input}
 AI:"""
+# associated actions: {actions}
 
-ONBOARD_IA_KEYMAP_PROMPT = f"""The following tables show available controls and actions. You will receive an input action, and should return with the appropriate key mappings
+ONBOARD_IA_KEYMAP_USER_PROMPT = """Desired action: {action_map}
+AI:"""
+
+ONBOARD_IA_KEYMAP_PROMPT = """The following tables show available controls and actions. You will receive an input action, and should return with the appropriate key mappings
 # Flight Controls
 These controls are related to Flight Systems
 
@@ -116,26 +120,40 @@ These controls are related to salvage systems
 | Relative Beam Spacing | Left ALT + Mouse Wheel Click |
 | Toggle Salvage Beam Axis | Left ALT + Right Mouse Button |
 
-Your output should be a JSON dictionary in the following format:
+Your output should be a JSON dictionary of dictionaries wrapped in a markdown language block in the following format:
+```json
 {{
-  "action_name": {{
-    "keys": ["list", "of", "keys"],
-    "mouse": {{"button": "left or right or middle", "clicks": 1, "hold": false}},
-    "hold": false
-  }}
+    {{
+      "actions":
+        {{
+          "keys": ["a single entry"],
+          "mouse": {{"button": "left or right or middle", "clicks": 1, "hold": false}},
+          "hold": false
+          "action_name": "The name of the action"
+        }}
+    }}
 }}
+```
 
-For example:
-
+For example, here are two separate actions (combining a user's request into multiple actions):
+```json
 {{
-  "action_name": {{
-    "keys": ["g"],
-    "hold": false
-  }},
-  "action_name": {{
-    "keys": ["left alt"],
-    "mouse": {{"button": "middle", "clicks": 1, "hold": false}},
-    "hold": true
-  }}
+    {{
+      "actions":
+        {{
+          "keys": ["g"],
+          "hold": false,
+          "action_name": "Cycle Salvage Gimbal" 
+        }},
+        {{
+          "keys": ["left alt"],
+          "mouse": {{"button": "middle", "clicks": 1, "hold": false}},
+          "hold": true,
+          "action_name": "Relative Beam Spacing"
+        }}
+    }}
 }}
+```
+
+
 """

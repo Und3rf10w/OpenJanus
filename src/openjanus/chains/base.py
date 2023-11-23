@@ -1,7 +1,7 @@
 from abc import ABC
 import asyncio
 import logging
-from typing import Iterator, Optional, Any, AsyncIterator, List
+from typing import Iterator, Optional, Any, AsyncIterator, List, Dict
 from uuid import UUID
 
 from langchain.agents.openai_functions_multi_agent.base import OpenAIMultiFunctionsAgent
@@ -72,9 +72,41 @@ class OpenJanusOpenAIFunctionsAgentCallbackHandler(BaseCallbackHandler):
         **kwargs: Any,
     ) -> Any:
         """Run on agent end."""
-        finish.return_values
+        # finish.return_values
         tts = get_tool()
         tts.run({"query": finish.return_values['response']})
+
+
+class OpenJanusChainCallbackHandler(BaseCallbackHandler):
+    def on_chain_end(
+        self,
+        outputs: Dict[str, Any],
+        *,
+        run_id: UUID,
+        parent_run_id: Optional[UUID] = None,
+        tags: Optional[List[str]] = None,
+        **kwargs: Any,
+    ) -> None:
+        """Run when chain ends running."""
+        outputs['response']
+        tts = get_tool()
+        tts.run({"query": outputs['response']})
+
+
+class AsyncOpenJanusChainCallbackHandler(BaseCallbackHandler):
+    async def on_chain_end(
+        self,
+        outputs: Dict[str, Any],
+        *,
+        run_id: UUID,
+        parent_run_id: Optional[UUID] = None,
+        tags: Optional[List[str]] = None,
+        **kwargs: Any,
+    ) -> None:
+        """Run when chain ends running."""
+        outputs['response']
+        tts = get_tool()
+        tts.run({"query": outputs['response']})
 
 
 def get_openjanus_agent_callbacks() -> list:

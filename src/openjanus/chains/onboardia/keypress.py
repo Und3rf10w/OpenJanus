@@ -1,5 +1,6 @@
+from collections.abc import Mapping
 import logging
-from typing import List
+from typing import List, Union, Dict
 
 from pynput.keyboard import Key, Controller as KeyboardController
 from pynput.mouse import Button, Controller as MouseController
@@ -112,18 +113,46 @@ def perform_action(action: dict):
         handle_keys(action['keys'], hold)
 
 
-def run(actions: dict):
-    for action_name, action in actions.items():
-        LOGGER.info(f"Onboard IA: Performing {action_name}")
-        perform_action(action)
-        LOGGER.info(f"Onboard IA: {action_name} completed")
+def run(input: str, keypresses: list):
+    if isinstance(keypresses, List):  # This is a list
+        for action in keypresses:
+            LOGGER.info(f"Onboard IA: Performing {action['action_name']}")
+            perform_action(action)
+            LOGGER.info(f"Onboard IA: {action['action_name']} completed")
+            return f"Actions {[action['action_name'] for action in keypresses]} Completed Successfully"
+    if isinstance(keypresses, Mapping):  # This is a dict
+        if not "actions" in keypresses:
+            LOGGER.info(f"Onboard IA: Performing {keypresses['action_name']}")
+            perform_action(action)
+            LOGGER.info(f"Onboard IA: {keypresses['action_name']} completed")
+            return f"Actions {keypresses['action_name']} completed. User asked: {input}"
+        if "actions" in keypresses:
+            LOGGER.info(f"Onboard IA: Performing {keypresses['actions']['action_name']}")
+            perform_action(keypresses['actions'])
+            LOGGER.info(f"Onboard IA: {keypresses['actions']['action_name']} completed")
+            return f"Actions {keypresses['actions']['action_name']} Completed Successfully. User asked: {input}"
 
 
-async def arun(actions: dict):
-    for action_name, action in actions.items():
-        LOGGER.info(f"Onboard IA: Performing {action_name}")
-        perform_action(action)
-        LOGGER.info(f"Onboard IA: {action_name} completed")
+
+async def arun(input: str, keypresses: list):
+    if not isinstance(keypresses, list):  # This is a list
+        for action in keypresses:
+            LOGGER.info(f"Onboard IA: Performing {action['action_name']}")
+            perform_action(action)
+            LOGGER.info(f"Onboard IA: {action['action_name']} completed")
+            return f"Actions {[action['action_name'] for action in keypresses]} Completed Successfully"
+    if isinstance(keypresses, Mapping):  # This is a dict
+        if not "actions" in keypresses:
+            LOGGER.info(f"Onboard IA: Performing {keypresses['action_name']}")
+            perform_action(action)
+            LOGGER.info(f"Onboard IA: {keypresses['action_name']} completed")
+            return f"Actions {keypresses['action_name']} completed. User asked: {input}"
+        if "actions" in keypresses:
+            LOGGER.info(f"Onboard IA: Performing {keypresses['actions']['action_name']}")
+            perform_action(keypresses['actions'])
+            LOGGER.info(f"Onboard IA: {keypresses['actions']['action_name']} completed")
+            return f"Actions {keypresses['actions']['action_name']} Completed Successfully. User asked: {input}"
+    
 
 # # Example usage
 # sample_input = {

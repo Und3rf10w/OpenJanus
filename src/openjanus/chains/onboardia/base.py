@@ -1,5 +1,6 @@
 from abc import ABC
-from typing import Any, Optional, List
+from operator import itemgetter
+from typing import Any, Optional, List, Union, Dict
 
 from langchain.agents import BaseSingleActionAgent
 from langchain.callbacks.base import BaseCallbackHandler
@@ -17,18 +18,27 @@ from langchain.output_parsers.openai_functions import (
     PydanticAttrOutputFunctionsParser,
 )
 from langchain.output_parsers.openai_tools import PydanticToolsParser
+from langchain.output_parsers.json import SimpleJsonOutputParser
 from langchain.prompts import SystemMessagePromptTemplate, ChatPromptTemplate, BasePromptTemplate, HumanMessagePromptTemplate
 from langchain.pydantic_v1 import BaseModel
 from langchain.schema import BasePromptTemplate
 from langchain.schema.language_model import BaseLanguageModel
 from langchain.schema.memory import BaseMemory
 from langchain.schema.messages import SystemMessage
-from langchain.schema.runnable import RunnableParallel
-from langchain.tools import Tool
+from langchain.schema.output_parser import StrOutputParser
+from langchain.schema.runnable import (
+    RunnableParallel, 
+    RunnableSequence, 
+    RunnablePassthrough, 
+    RunnableMap, 
+    Runnable
+)
+from langchain.tools import Tool, StructuredTool
 from langchain.utils.openai_functions import convert_pydantic_to_openai_tool
 
 from openjanus.chains.base import BaseOpenJanusConversationChain, BaseOpenJanusOpenAIFunctionsAgent
 from openjanus.chains.onboardia.prompt import (
+    ONBOARD_IA_KEYMAP_USER_PROMPT,
     ONBOARD_IA_SYSTEM_PROMPT,
     ONBOARD_IA_USER_PROMPT,
     ONBOARD_IA_KEYMAP_PROMPT
@@ -40,7 +50,8 @@ from openjanus.chains.onboardia.keypress import(
 
 class KeypressSchema(BaseModel):
     """What actions to perform that correspond with an action that the onboard computer is tasked with performing"""
-    action: str
+    input: str
+    keypresses: Union[Dict, List]
 
 
 class OnboardIaChain(BaseOpenJanusConversationChain):
@@ -72,6 +83,16 @@ def _get_keypress_function(entity_schema: dict) -> dict:
         },
     }
 
+def get_ship_actions(input):
+    ship_action= Tool.from_function(
+        name="Perform_Action",
+        description="Use this tool next to perform actions. Pass the entire original output from Retrieve_keypresses directly to this tool.",
+        func=keypress_run,
+        coroutine=keypress_arun,
+        verbose=True
+    )
+    output = ship_action.run(input)
+    return {"actions": output}
 
 def create_parallel_onboard_ia_chain(
     llm: BaseLanguageModel,
@@ -79,7 +100,8 @@ def create_parallel_onboard_ia_chain(
     tags: Optional[List[str]] = None,
     verbose: bool = False,
     **kwargs
-) -> (OnboardIaChain, List[Tool]):
+# ) -> (OnboardIaChain, List[Tool]):
+) -> Runnable:
     """
     Which key button to press
 
@@ -116,44 +138,55 @@ def create_parallel_onboard_ia_chain(
     #     verbose=verbose,
     #     args_schema=KeypressSchema,
     # )
-    # onboard_ia_chain = OnboardIaChain(memory=memory, llm=llm, verbose=verbose)
+    onboard_ia_chain = OnboardIaChain(memory=memory, llm=llm, verbose=verbose, **kwargs)
 
-    keypress_mapgen_chain = ConversationChain(
-        llm=llm,
-        memory=SimpleMemory(memories={"chat_history": ""}),
-        verbose=verbose,
-        tags=tags,
-        prompt=ChatPromptTemplate.from_messages([
-            SystemMessagePromptTemplate.from_template(ONBOARD_IA_SYSTEM_PROMPT),
-            HumanMessagePromptTemplate.from_template(ONBOARD_IA_USER_PROMPT)
-        ]),
-    )
+    # keypress_mapgen_chain = ConversationChain(
+    #     llm=llm,
+    #     memory=SimpleMemory(memories={"chat_history": ""}),
+    #     verbose=verbose,
+    #     tags=tags,
+    #     prompt=ChatPromptTemplate.from_messages([
+    #         SystemMessagePromptTemplate.from_template(ONBOARD_IA_KEYMAP_PROMPT),
+    #         HumanMessagePromptTemplate.from_template(ONBOARD_IA_USER_PROMPT)
+    #     ]),
+    # )
+    keypress_prompt = ChatPromptTemplate.from_messages([
+            SystemMessagePromptTemplate.from_template(template=ONBOARD_IA_KEYMAP_PROMPT),
+            HumanMessagePromptTemplate.from_template(ONBOARD_IA_KEYMAP_USER_PROMPT)
+        ])
     
     # Input: "Turn on the lights and deploy the landing gear"
     # Output: { "Toggle Ship Lights": { "keys": ["L"], "hold": false }, "Landing Gear": { "keys": ["N"], "hold": false } }
-    keypress_tool = Tool.from_function(
-        name="Retrieve_Keypresses",
-        description="Use this tool first to retrieve a keypress mapping that you need to perform actions onboard the ship on behalf of the user",
-        func=keypress_mapgen_chain.invoke,
-        coroutine=keypress_mapgen_chain.ainvoke,
-        verbose=verbose,
-    )
-    ship_action= Tool.from_function(
+    # keypress_tool = Tool.from_function(
+    #     name="Retrieve_Keypresses",
+    #     description="Use this tool first to retrieve a keypress mapping that you need to perform actions onboard the ship on behalf of the user",
+    #     func=keypress_mapgen_chain.invoke,
+    #     coroutine=keypress_mapgen_chain.ainvoke,
+    #     verbose=verbose,
+    # )
+    # map_ = RunnableMap(input=RunnablePassthrough())
+    ship_action= StructuredTool.from_function(
         name="Perform_Action",
         description="Use this tool next to perform actions. Pass the entire original output from Retrieve_keypresses directly to this tool.",
         func=keypress_run,
         coroutine=keypress_arun,
-        verbose=True
+        verbose=True,
+        args_schema=KeypressSchema
     )
-    tools = [keypress_tool, ship_action]
-    chain = OnboardIaAgent.from_llm_and_tools(
-        llm=llm,
-        tools=tools,
-        system_message=SystemMessage(
-            content=ONBOARD_IA_SYSTEM_PROMPT
-        ),
-        memory=memory,
-        tags=tags,
-        verbose=verbose,
+    
+    keypress_chain = {"input": RunnablePassthrough()} | RunnablePassthrough.assign(action_map=itemgetter("input")) | keypress_prompt | llm | SimpleJsonOutputParser()
+    # ship_action_chain = Runnable(get_ship_actions)
+    chain = (
+        RunnablePassthrough.assign(keypresses=keypress_chain)
+        | ship_action
+        | {"input": RunnablePassthrough()}
+        # | StrOutputParser()
+        | onboard_ia_chain
     )
-    return (chain, tools)
+    # ship_action = {RunnablePassthrough.assign(actions=keypress_chain) | StrOutputParser()}
+
+    # chain = RunnableSequence(keypress_chain | 
+    #                         # {"actions": ship_action} | 
+    #                         RunnablePassthrough.assign(input=itemgetter("input"), actions=ship_action) |onboard_ia_chain
+    #                         )
+    return chain
