@@ -1,13 +1,11 @@
 # OpenJanus - A voice controlled IA for Star Citizen
-I'll finish this when I get bored. Track the progress to alpha in [#1](https://github.com/Und3rf10w/OpenJanus/issues/1)
-
-OpenJanus is a voice controlled intelligent assistant for Star Citizen. It makes use of OpenAI's GPT for text generation, OpenAI whisper for speech to text conversion, and can make use of either piper or elevenlabs for text to speech generation.
+OpenJanus is a voice controlled intelligent assistant for Star Citizen. It makes use of OpenAI's GPT for text generation, OpenAI whisper for speech to text conversion, and can make use of either OpenAI Whisper or elevenlabs for text to speech generation.
 
 OpenJanus works like so:
 
 - Streaming audio from the microphone directly into a stt engine like Whisper.
-- Streaming generations from a LLM directly into a tts engine like piper or elevenlabs
-- By using either elevenlabs or piper, one can clone any voice they want to use with OpenJanus
+- Streaming generations from a LLM directly into a tts engine like elevenlabs or whisper
+- By using elevenlabs, one can clone any voice they want to use with OpenJanus
 
 # Features
 - ATC
@@ -17,7 +15,7 @@ OpenJanus works like so:
 - ???
 
 # Why?
-I get mildly annoyed when I see [videos like this](https://www.youtube.com/watch?v=hHy7OZQX_nQ) and they aren't released as open source; so I went full Bender and decided to make my own, only there's no blackjack or hookers.
+I see [videos like this](https://www.youtube.com/watch?v=hHy7OZQX_nQ) and they weren't released as open source at the time.
 
 # What/where is the license?
 At this time I am not providing a license, but am providing the codebase. Depending on how things go, I'll decide to provide a license.
