@@ -23,15 +23,15 @@ class OpenAIWhisperSpeaker(BaseTool):
     name: str = "OpenAI_Whisper_Speech_to_Text"
     description: str = """Use this tool to speak a response. Pass the entire input unaltered to this tool."""
     api_key: Optional[str]
-    voice_id: Optional[str] = "nova"
-    voice_model: Optional[Union[Literal["tts-1"], Literal["tts-1-hd"]]]
+    voice_id: Optional[Literal["alloy", "echo", "fable", "onyx", "nova", "shimmer"]] = "nova"
+    voice_model: Optional[Union[str, Literal["tts-1", "tts-1-hd"]]]
     output_file_path: Optional[str] = ""
 
     def __init__(
             self, 
             api_key: Optional[str] = None, 
-            voice_id: Optional[str] = "nova",
-            voice_model: Optional[Union[Literal["tts-1"], Literal["tts-1-hd"]]] = "tts-1",
+            voice_id: Optional[Literal["alloy", "echo", "fable", "onyx", "nova", "shimmer"]] = "nova",
+            voice_model: Optional[Union[str, Literal["tts-1", "tts-1-hd"]]] = "tts-1",
             *args,
             **kwargs
         ) -> None:
@@ -193,31 +193,31 @@ class OpenAIWhisperSpeaker(BaseTool):
                 yield ''.join(chunk)
         
         async def process_audio(queue: asyncio.Queue):
-            while True:
-                try:
-                    audio_bytes, chunk_text, save_message_flag = await queue.get()
-                    LOGGER.info("Playing audio...")
-                    if audio_bytes is None:
-                        break
-                    # Write the response to a file
-                    LOGGER.debug(f"Wrote response to {self.output_file_path}")
-                    if chunk_text:
-                        LOGGER.debug(chunk_text)
-                    self.stream_audio(audio_stream=iter([audio_bytes]))
-                    LOGGER.info("Ending audio stream")
-                    with open(self.output_file_path, 'wb') as f:
-                        f.write(audio_bytes)
-                except TypeError:
-                    break
+            audio_bytes, chunk_text = await queue.get()  # TODO: Save message flag here
+            try:
+                LOGGER.info("Playing audio...")
+                if audio_bytes is None:
+                    return chunk_text
+                # Write the response to a file
+                # LOGGER.debug(f"Wrote response to {self.output_file_path}")
+                if chunk_text:
+                    LOGGER.debug(chunk_text)
+                self.stream_audio(audio_stream=iter([audio_bytes]))
+                LOGGER.info("Ending audio stream")
+                # with open(self.output_file_path, 'wb') as f:
+                #     f.write(audio_bytes)
+                return chunk_text
+            except TypeError:
+                return chunk_text
 
         async def process_chunks(chunk_text):
             audio_bytes = []
-            async for chunk in openai.audio.speech.create(
+            audio_chunk = openai.audio.speech.create(
                 model=self.voice_model,
                 voice=self.voice_id,
-                input=chunk
-            ).iter_bytes():
-                audio_bytes.append(chunk)
+                input=chunk_text
+            )
+            audio_bytes.append(audio_chunk.content)
             audio = b''.join(audio_bytes)
             await queue.put((audio, chunk_text))
 

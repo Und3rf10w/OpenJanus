@@ -96,17 +96,16 @@ class Recorder:
         LOGGER.info("hit transcribe_and_invoke")
         try:
             # Construct a Blob from the recording file
-            # blob = Blob.from_path(recording_path)
-            # whisper_parser = OpenAIWhisperParser()
-            # # Generate document objects
-            # documents = whisper_parser.lazy_parse(blob)
+            blob = Blob.from_path(recording_path)
+            whisper_parser = OpenAIWhisperParser()
+            # Generate document objects
+            documents = whisper_parser.lazy_parse(blob)
             
-            # combined_transcription = []
-            # # Combine the documents
-            # for document in documents:
-            #     LOGGER.debug(f"Transcription: {document.page_content}")
-            #     combined_transcription.append(document.page_content)
-            # asyncio.run(agent_chain.ainvoke({"input": ''.join(combined_transcription), "chat_history": []}))
-            asyncio.run(agent_chain.ainvoke({"input": "Turn the ship's lights on", "chat_history": []}))
+            combined_transcription = []
+            # Combine the documents
+            for document in documents:
+                LOGGER.debug(f"Transcription: {document.page_content}")
+                combined_transcription.append(document.page_content)
+            asyncio.run(agent_chain.ainvoke({"input": ''.join(combined_transcription), "chat_history": []}))
         except Exception as e:
             LOGGER.error(f"Failed to transcribe: {str(e)}")

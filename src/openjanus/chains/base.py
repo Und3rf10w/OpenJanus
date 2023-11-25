@@ -15,8 +15,8 @@ from langchain.schema.runnable.utils import (
 from langchain.schema.runnable.config import RunnableConfig
 from langchain.tools import Tool
 
-from openjanus.tts.elevenlabs.chat import get_tool
-# from openjanus.tts.whisper.chat import get_tool
+# from openjanus.tts.elevenlabs.chat import get_tool
+from openjanus.tts.whisper.chat import get_tool
 
 
 LOGGER = logging.getLogger(__name__)
