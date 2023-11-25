@@ -1,5 +1,6 @@
 import asyncio
 
+import concurrent.futures
 import logging
 import threading
 from pynput import keyboard
@@ -61,7 +62,8 @@ async def main():
                 if key == keyboard.Key.f12 and self.recorder.is_recording:
                     LOGGER.info("Recording button released")
                     recording_path = self.recorder.stop_recording()
-                    threading.Thread(target=self.recorder.transcribe_and_invoke, args=(self.agent_chain,recording_path,)).start()
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                        executor.submit(self.recorder.transcribe_and_invoke, self.agent_chain, recording_path)
                     self.record_key_pressed = False
             except Exception as e:
                 LOGGER.error("Raised an error when stopping recording", exc_info=e)
