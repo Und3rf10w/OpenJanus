@@ -49,7 +49,7 @@ class OpenAIWhisperSpeaker(BaseTool):
 
     def set_recording_path(self):
         # TODO: Clean this up, set from config, etc
-        output_format = f"output.{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}".replace(' ','_')
+        output_format = f"output.{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.mp3".replace(' ','_')
         self.output_file_path = str(pathlib.PurePath(output_format))
 
     # Ripped from elevenlabs
@@ -157,7 +157,7 @@ class OpenAIWhisperSpeaker(BaseTool):
             
             LOGGER.debug(f"Wrote response to {self.output_file_path}")
 
-            return self.output_file_path
+            return query
         except Exception as e:
             LOGGER.error("Error received while doing OpenAI Whisper TTS", exc_info=e)
 
@@ -204,8 +204,8 @@ class OpenAIWhisperSpeaker(BaseTool):
                     LOGGER.debug(chunk_text)
                 self.stream_audio(audio_stream=iter([audio_bytes]))
                 LOGGER.info("Ending audio stream")
-                # with open(self.output_file_path, 'wb') as f:
-                #     f.write(audio_bytes)
+                with open(self.output_file_path, 'wb') as f:
+                    f.write(audio_bytes)
                 return chunk_text
             except TypeError:
                 return chunk_text
@@ -230,4 +230,4 @@ class OpenAIWhisperSpeaker(BaseTool):
 
         await asyncio.gather(*tasks)
         await queue.put(None)
-        await audio_task
+        return await audio_task

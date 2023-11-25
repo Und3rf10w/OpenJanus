@@ -128,21 +128,22 @@ class BaseOpenJanusConversationChain(ConversationChain):
         input: Input,
         config: Optional[RunnableConfig] = None,
         **kwargs: Optional[Any],
-    ) -> Iterator[Output]:
+    ) -> List[Dict[str, Any]]:
         """
         Default implementation of stream, which calls invoke.
         Subclasses should override this method if they support streaming output.
         """ 
         stream = self.invoke(input, config, **kwargs)
         tts = get_tool()
-        tts.run({"query": stream['response']})
+        response = tts.run({"query": stream['response']})
+        return [{self.output_key: response}]
 
     async def aprocess(
         self,
         input: Input,
         config: Optional[RunnableConfig] = None,
         **kwargs: Optional[Any],
-    ) -> AsyncIterator[Output]:
+    ) -> List[Dict[str, Any]]:
         """
         Default implementation of astream, which calls ainvoke.
         Subclasses should override this method if they support streaming output.
@@ -150,6 +151,8 @@ class BaseOpenJanusConversationChain(ConversationChain):
         stream = self.stream(input, config, **kwargs)
         tts = get_tool()
         response = await tts.arun({"stream": stream})
+        return [{self.output_key: response}]
+         
 
 
 def tts_agent_tool(**kwargs) -> Tool:
