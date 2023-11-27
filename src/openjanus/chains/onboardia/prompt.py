@@ -5,9 +5,9 @@ ONBOARD_IA_SYSTEM_PROMPT = "You are an intelligence assistant onboard a space sh
 ONBOARD_IA_USER_PROMPT = """Conversation History: {chat_history}
 User: {input}
 AI:"""
-# associated actions: {actions}
+# Executed Actions: {text}
 
-ONBOARD_IA_KEYMAP_USER_PROMPT = """Desired action: {action_map}
+ONBOARD_IA_KEYMAP_USER_PROMPT = """Desired action: {input}
 AI:"""
 
 ONBOARD_IA_KEYMAP_PROMPT = """The following tables show available controls and actions. You will receive an input action, and should return with the appropriate key mappings

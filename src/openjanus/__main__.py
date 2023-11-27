@@ -17,13 +17,14 @@ from openjanus.chains.prompt import BASE_AGENT_SYSTEM_PROMPT_PREFIX
 from openjanus.stt.whisper.recorder import Recorder
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 LOGGER = logging.getLogger(__name__)
 
 
 async def main():
     chat_llm = ChatOpenAI(
         model="gpt-3.5-turbo-1106",
+        # model="gpt-4-1106-preview",
         temperature=0.5,
         streaming=True,
         verbose=True
@@ -80,14 +81,7 @@ async def main():
 
 
 if __name__ == "__main__":
-   
-    # TODO: Run app here
-    # Async invoking the chain:
-    # asyncio.run(test_invoke(agent_chain))
-    # Invoking the chain:
-    # agent_chain.invoke({"input":"Hello ATC, this is John Smith, on approach to Seraphim Station. Requesting permission to land, over.", "chat_history": []})
-    # asyncio.run(main())
-    # print("done")
+
     loop = asyncio.get_event_loop()
     try:
         loop.run_until_complete(main())

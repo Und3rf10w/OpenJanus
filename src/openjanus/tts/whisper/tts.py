@@ -26,6 +26,7 @@ class OpenAIWhisperSpeaker(BaseTool):
     voice_id: Optional[Literal["alloy", "echo", "fable", "onyx", "nova", "shimmer"]] = "nova"
     voice_model: Optional[Union[str, Literal["tts-1", "tts-1-hd"]]]
     output_file_path: Optional[str] = ""
+    verbose: bool = True
 
     def __init__(
             self, 
@@ -231,3 +232,6 @@ class OpenAIWhisperSpeaker(BaseTool):
         await asyncio.gather(*tasks)
         await queue.put(None)
         return await audio_task
+
+    async def astream_speech_from_stream(self, stream, *args: Any, **kwargs: Any) -> Any:
+        return await self._arun(stream, *args, **kwargs)

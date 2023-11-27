@@ -125,7 +125,7 @@ class BaseOpenJanusOpenAIFunctionsAgent(OpenAIMultiFunctionsAgent, ABC):
 class BaseOpenJanusConversationChain(ConversationChain):
     def process(
         self,
-        input: Input,
+        input: Dict,
         config: Optional[RunnableConfig] = None,
         **kwargs: Optional[Any],
     ) -> List[Dict[str, Any]]:
@@ -140,7 +140,7 @@ class BaseOpenJanusConversationChain(ConversationChain):
 
     async def aprocess(
         self,
-        input: Input,
+        input: Dict,
         config: Optional[RunnableConfig] = None,
         **kwargs: Optional[Any],
     ) -> List[Dict[str, Any]]:

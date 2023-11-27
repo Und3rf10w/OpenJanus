@@ -106,9 +106,12 @@ class Recorder:
             for document in documents:
                 LOGGER.debug(f"Transcription: {document.page_content}")
                 combined_transcription.append(document.page_content)
-            # output = asyncio.run(agent_chain.ainvoke({"input": "Seraphim Station, this is john smith, requesting permission to dock, over.", "chat_history": []}))
-            # output = asyncio.run(agent_chain.ainvoke({"input": ''.join(combined_transcription), "chat_history": []}))
-            # asyncio.run(agent_chain.ainvoke({"input": "Turn the ship's lights on", "chat_history": []}))
+            
+            # These are just for testing
+            # output = asyncio.run(agent_chain.ainvoke({"input": "Seraphim Station, this is john smith, requesting permission to land, over.", "chat_history": []}))
+            # output = asyncio.run(agent_chain.ainvoke({"input": "Turn the ship's lights on", "chat_history": []}))
+            
+            output = asyncio.run(agent_chain.ainvoke({"input": ''.join(combined_transcription), "chat_history": []}))
             return output['output'][0]['response']
         except Exception as e:
             LOGGER.error(f"Failed to transcribe: {str(e)}")
