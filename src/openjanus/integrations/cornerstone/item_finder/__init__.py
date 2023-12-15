@@ -40,6 +40,8 @@ class ItemFinder(Integration):
             for item in found_items:
                 item_details = self.get_item_details_and_data(item["id"])
                 all_items.append(item_details)
+                # Playing nice with cornerstone
+                sleep(0.1)
         return all_items      
     
 
