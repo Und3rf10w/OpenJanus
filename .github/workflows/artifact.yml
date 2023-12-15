@@ -1,0 +1,36 @@
+name: Build Executable
+
+on:
+  push:
+    branches: [ workflow_testing ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.11
+
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python -
+
+    - name: Install dependencies
+      run: |
+        poetry install
+
+    - name: Build Executable
+      run: |
+        pyinstaller --onefile __main__.py
+
+    - name: Upload Executable
+      uses: actions/upload-artifact@v2
+      with:
+        name: Executable
+        path: dist/__main__
