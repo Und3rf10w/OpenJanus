@@ -145,3 +145,33 @@ jobs:
         asset_path: ./OpenJanus-win-${{ steps.get_version.outputs.version }}.exe
         asset_name: OpenJanus-win-${{ steps.get_version.outputs.version }}.exe
         asset_content_type: application/octet-stream
+
+  notify-release-linux:
+    needs: release-linux
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install toml
+      run: pip install toml
+
+    - name: Get version
+      id: get_version
+      run: echo "::set-output name=version::$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+    
+    - name: Call Webhook
+      run: curl -X POST -H 'Content-Type: application/json' -d '{"text": "OpenJanus Linux Release ${{ steps.get_version.outputs.version }}", "format": "plain", "displayName": "Github Actions - OpenJanus"}' ${{ secrets.WEBHOOK_URL }}
+
+  notify-release-windows:
+    needs: release-windows
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install toml
+      run: pip install toml
+
+    - name: Get version
+      id: get_version
+      run: echo "::set-output name=version::$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+    
+    - name: Call Webhook
+      run: curl -X POST -H 'Content-Type: application/json' -d '{"text": "OpenJanus Windows Release ${{ steps.get_version.outputs.version }}", "format": "plain", "displayName": "Github Actions - OpenJanus"}' ${{ secrets.WEBHOOK_URL }}
