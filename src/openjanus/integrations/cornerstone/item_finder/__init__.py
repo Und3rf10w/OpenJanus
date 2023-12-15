@@ -10,7 +10,7 @@ from openjanus.integrations.base import Integration
 
 
 class ItemFinder(Integration):
-    base_url: Optional[str] = "https://finder.cstone.space/"
+    base_url: str = "https://finder.cstone.space/"
 
     def __init__(self,
                  base_url: str = "https://finder.cstone.space/",
@@ -20,13 +20,19 @@ class ItemFinder(Integration):
         self.base_url = base_url
         self.session = requests.session()
 
+    
     @cached(cache=TTLCache(maxsize=1024, ttl=3600))
+    def _cornerstone_get(self, path: str, allow_redirects: bool = True) -> requests.Response:
+        response = self.session.get(urljoin(self.base_url, path), allow_redirects=allow_redirects)
+        response.raise_for_status()
+        return response
+
+
     def search_items(self, query: str) -> List[Dict[str, Any]]:
         """
         Search for items by name, returning a list of items that match the query. Input should be minimal, as the search is fuzzy.
         """
-        response = self.session.get(urljoin(self.base_url, f"GetSearch"))
-        response.raise_for_status()
+        response = self._cornerstone_get(f"GetSearch")
         items = response.json()
         found_items = [item for item in items if query.lower() in item["name"].lower()]
         all_items = []
@@ -34,17 +40,13 @@ class ItemFinder(Integration):
             for item in found_items:
                 item_details = self.get_item_details_and_data(item["id"])
                 all_items.append(item_details)
-                # Playing nice with cornerstone
-                sleep(0.1)
         return all_items      
     
 
-    @cached(cache=TTLCache(maxsize=1024, ttl=3600))
     def get_item_details(self, item_id: str) -> Union[str, None]:
-        response = self.session.get(urljoin(self.base_url, f"Search/{item_id}"), allow_redirects=False)
+        response = self._cornerstone_get(f"Search/{item_id}", allow_redirects=False)
         if response.status_code == 302:
-            redirect_url = urljoin(self.base_url, response.headers["Location"])
-            response = self.session.get(redirect_url)
+            response = self._cornerstone_get(response.headers["Location"])
             response.raise_for_status()
             return response.text
         else:

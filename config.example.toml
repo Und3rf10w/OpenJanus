@@ -7,6 +7,8 @@ tts_engine = "elevenlabs"
 [openai]
 # Set your openai api key here
 api_key = "sk...."
+# Set the path to `mpv.exe` if it's not already in your PATH. Only matters if `tts_engine` == `whisper`
+# mpv_path = mpv.exe
 
 [elevenlabs]
 api_key = ""
