@@ -9,7 +9,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout repo
+      uses: actions/checkout@v2
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -42,7 +43,8 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout repo
+      uses: actions/checkout@v2
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -76,6 +78,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
     - name: Install toml
       run: pip install toml
 
@@ -123,6 +128,9 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
     - name: Install toml
       run: pip install toml
 
@@ -170,6 +178,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
     - name: Install toml
       run: pip install toml
 
@@ -194,6 +205,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
     - name: Install toml
       run: pip install toml
 
