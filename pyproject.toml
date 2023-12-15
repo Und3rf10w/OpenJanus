@@ -1,6 +1,6 @@
 [project]
 name = "OpenJanus"
-version = "0.1.1"
+version = "0.2.0"
 description = "A voice controlled Intelligent Assistant for Star Citizen"
 authors = [
     {name = "Und3rf10w", email = "dontemailme@example.com"},
