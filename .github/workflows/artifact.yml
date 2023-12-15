@@ -1,4 +1,4 @@
-name: Build Executables
+name: Build Executable Releases
 
 on:
   push:
@@ -27,10 +27,14 @@ jobs:
       run: |
         pyinstaller --onefile src/openjanus/__main__.py
 
+    - name: Get version
+      id: get_version
+      run: echo "::set-output name=version::$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+
     - name: Upload Executable
       uses: actions/upload-artifact@v2
       with:
-        name: OpenJanus-linux
+        name: OpenJanus-linux-${{ steps.get_version.outputs.version }}
         path: dist/__main__
 
   build-windows:
@@ -54,8 +58,76 @@ jobs:
       run: |
         pyinstaller --onefile src/openjanus/__main__.py
 
+    - name: Get version
+      id: get_version
+      run: echo "::set-output name=version::$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+
     - name: Upload Executable
       uses: actions/upload-artifact@v2
       with:
-        name: OpenJanus-win.exe
+        name: OpenJanus-win-${{ steps.get_version.outputs.version }}.exe
         path: dist/__main__.exe
+
+    release-linux:
+      needs: build-linux
+      runs-on: ubuntu-latest
+
+      steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get_version.outputs.version }}
+          release_name: Release ${{ steps.get_version.outputs.version }}
+          draft: false
+          prerelease: false
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: OpenJanus-linux-${{ steps.get_version.outputs.version }}
+          path: .
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./OpenJanus-linux-${{ steps.get_version.outputs.version }}
+          asset_name: OpenJanus-linux-${{ steps.get_version.outputs.version }}
+          asset_content_type: application/octet-stream
+
+    release-windows:
+      needs: build-windows
+      runs-on: windows-latest
+
+      steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get_version.outputs.version }}
+          release_name: Release ${{ steps.get_version.outputs.version }}
+          draft: false
+          prerelease: false
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: OpenJanus-win-${{ steps.get_version.outputs.version }}.exe
+          path: .
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./OpenJanus-win-${{ steps.get_version.outputs.version }}.exe
+          asset_name: OpenJanus-win-${{ steps.get_version.outputs.version }}.exe
+          asset_content_type: application/octet-stream
