@@ -1,0 +1,151 @@
+name: Build Executable Releases
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.11
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y portaudio19-dev gcc
+        python -m pip install --upgrade pip
+        pip install .
+        pip install pyinstaller toml
+
+    - name: Build Executable
+      run: |
+        pyinstaller --onefile src/openjanus/__main__.py
+
+    - name: Get version
+      id: get_version
+      run: |
+        echo "::set-output name=version::$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+
+    - name: Upload Executable
+      uses: actions/upload-artifact@v2
+      with:
+        name: OpenJanus-linux-${{ steps.get_version.outputs.version }}
+        path: dist/__main__
+
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.11
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install .
+        pip install pyinstaller
+
+    - name: Build Executable
+      run: |
+        pyinstaller --onefile src/openjanus/__main__.py
+
+    - name: Get version
+      id: get_version
+      run: |
+        echo "::set-output name=version::$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")"
+
+    - name: Upload Executable
+      uses: actions/upload-artifact@v2
+      with:
+        name: OpenJanus-win-${{ steps.get_version.outputs.version }}.exe
+        path: dist/__main__.exe
+
+  release:
+    needs: 
+    - build-linux
+    - build-windows
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Install toml
+      run: pip install toml
+
+    - name: Get version
+      id: get_version
+      run: |
+        echo "::set-output name=version::$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.get_version.outputs.version }}
+        release_name: Release ${{ steps.get_version.outputs.version }}
+        draft: false
+        prerelease: false
+
+    - name: Download Artifact
+      uses: actions/download-artifact@v2
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: /home/runner/work/OpenJanus/OpenJanus/OpenJanus-linux-${{ steps.get_version.outputs.version }}/__main__
+        asset_name: OpenJanus-linux-${{ steps.get_version.outputs.version }}
+        asset_content_type: application/octet-stream
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: /home/runner/work/OpenJanus/OpenJanus/OpenJanus-win-${{ steps.get_version.outputs.version }}.exe/__main__.exe
+        asset_name: OpenJanus-win-${{ steps.get_version.outputs.version }}.exe
+        asset_content_type: application/octet-stream
+
+  notify-release:
+    needs: release
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Install toml
+      run: pip install toml
+
+    - name: Get version
+      id: get_version
+      run: |
+        echo "::set-output name=version::$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")"    
+
+    - name: Call Webhook
+      run: |
+        curl -X POST \
+        -H 'Content-Type: application/json' \
+        -d '{
+          "text": "[OpenJanus Release ${{ steps.get_version.outputs.version }}](https://github.com/Und3rf10w/OpenJanus/releases/tag/${{ steps.get_version.outputs.version }})\n",
+          "format": "markdown", "displayName": "Github Actions - OpenJanus"
+        }' \
+        ${{ secrets.WEBHOOK_URL }}
