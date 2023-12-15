@@ -36,7 +36,7 @@ Next, set your API key for whatever service(s) you're using in `config.toml`. Th
 > If you have `x_API_KEY` set in your environment, we will default to that first, else, we will pull from the config. E.g. if `OPENAI_API_KEY` is set in your environment, OpenJanus will try that value, and ignore the one in `config.toml`. OpenJanus will forcibly set the environment variable.
 
 # Why?
-I see [videos like this](https://www.youtube.com/watch?v=hHy7OZQX_nQ) and they weren't released as open source at the time.
+I see [videos like this](https://www.youtube.com/watch?v=hHy7OZQX_nQ) and they weren't released as open source at the time. In addition, I prefer more agentic architectures when it comes to AI tooling, and having it backed by [LangChain](https://www.langchain.com/) seemed like a reasonable approach
 
 # What/where is the license?
 At this time I am not providing a license, but am providing the codebase. Depending on how things go, I'll decide to provide a license.
