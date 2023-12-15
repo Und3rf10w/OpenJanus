@@ -104,9 +104,9 @@ jobs:
     - name: Download Artifact
       uses: actions/download-artifact@v2
     - name: Display Artifact
-      run: ls -l >> $GITHUB_OUTPUT
+      run: ls -l
     - name: Display Artifact Directory
-      run: pwd >> $GITHUB_OUTPUT
+      run: pwd
 
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
