@@ -29,8 +29,9 @@ jobs:
 
     - name: Get version
       id: get_version
-      run: echo "::set-output name=version::$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
-
+      run: |
+        export VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
     - name: Upload Executable
       uses: actions/upload-artifact@v2
       with:
@@ -60,7 +61,9 @@ jobs:
 
     - name: Get version
       id: get_version
-      run: echo "::set-output name=version::$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+      run: |
+        export VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
 
     - name: Upload Executable
       uses: actions/upload-artifact@v2
@@ -78,7 +81,9 @@ jobs:
 
     - name: Get version
       id: get_version
-      run: echo "::set-output name=version::$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+      run: |
+        export VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
 
     - name: Create Release
       id: create_release
@@ -117,7 +122,9 @@ jobs:
 
     - name: Get version
       id: get_version
-      run: echo "::set-output name=version::$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+      run: |
+        export VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
 
     - name: Create Release
       id: create_release
@@ -156,7 +163,9 @@ jobs:
 
     - name: Get version
       id: get_version
-      run: echo "::set-output name=version::$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+      run: |
+        export VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
     
     - name: Call Webhook
       run: |
@@ -178,7 +187,9 @@ jobs:
 
     - name: Get version
       id: get_version
-      run: echo "::set-output name=version::$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+      run: |
+        export VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
     
     - name: Call Webhook
       run: |
