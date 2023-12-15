@@ -55,7 +55,6 @@ class AsyncOpenJanusOpenAIFunctionsAgentCallbackHandler(AsyncCallbackHandler):
         **kwargs: Any,
     ) -> None:
         """Run on agent end."""
-        finish.return_values
         tts = get_tool()
         await tts.arun({"query": finish.return_values['output']})
 

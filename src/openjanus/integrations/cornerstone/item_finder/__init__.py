@@ -1,3 +1,4 @@
+from time import sleep
 from bs4 import BeautifulSoup
 from cachetools import cached, TTLCache
 import json
@@ -27,9 +28,18 @@ class ItemFinder(Integration):
         response = self.session.get(urljoin(self.base_url, f"GetSearch"))
         response.raise_for_status()
         items = response.json()
-        return [item for item in items if query.lower() in item["name"].lower()]
+        found_items = [item for item in items if query.lower() in item["name"].lower()]
+        all_items = []
+        if len(found_items) > 0 and len(found_items) <= 30:
+            for item in found_items:
+                item_details = self.get_item_details_and_data(item["id"])
+                all_items.append(item_details)
+                # Playing nice with cornerstone
+                sleep(0.1)
+        return all_items      
     
 
+    @cached(cache=TTLCache(maxsize=1024, ttl=3600))
     def get_item_details(self, item_id: str) -> Union[str, None]:
         response = self.session.get(urljoin(self.base_url, f"Search/{item_id}"), allow_redirects=False)
         if response.status_code == 302:
