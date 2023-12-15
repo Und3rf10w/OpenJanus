@@ -64,8 +64,8 @@ jobs:
     - name: Get version
       id: get_version
       run: |
-        echo "::set-output name=version::$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])"
-
+        echo "::set-output name=version::$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")"
+        
     - name: Upload Executable
       uses: actions/upload-artifact@v2
       with:
@@ -135,8 +135,8 @@ jobs:
     - name: Get version
       id: get_version
       run: |
-        echo "::set-output name=version::$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])"
-
+        echo "::set-output name=version::$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")"
+        
     - name: Tag Release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
@@ -210,8 +210,8 @@ jobs:
     - name: Get version
       id: get_version
       run: |
-        echo "::set-output name=version::$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])"
-    
+        echo "::set-output name=version::$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")"    
+        
     - name: Call Webhook
       run: |
         curl -X POST \
