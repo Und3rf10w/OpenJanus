@@ -62,7 +62,7 @@ jobs:
     - name: Get version
       id: get_version
       run: |
-        export VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')
+        set VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')
         echo "version=$VERSION" >> $GITHUB_OUTPUT
 
     - name: Upload Executable
@@ -84,6 +84,12 @@ jobs:
       run: |
         export VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')
         echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Tag Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+      run: | 
+        git tag v${{ steps.getver.outputs.version }}
 
     - name: Create Release
       id: create_release
@@ -123,8 +129,14 @@ jobs:
     - name: Get version
       id: get_version
       run: |
-        export VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')
+        set VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')
         echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Tag Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+      run: | 
+        git tag v${{ steps.getver.outputs.version }}
 
     - name: Create Release
       id: create_release
@@ -188,7 +200,7 @@ jobs:
     - name: Get version
       id: get_version
       run: |
-        export VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')
+        set VERSION=$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')
         echo "version=$VERSION" >> $GITHUB_OUTPUT
     
     - name: Call Webhook
@@ -196,7 +208,7 @@ jobs:
         curl -X POST \
         -H 'Content-Type: application/json' \
         -d '{
-          "text": "OpenJanus Windows Release ${{ steps.get_version.outputs.version }}",
-          "format": "plain", "displayName": "Github Actions - OpenJanus"
+          "text": "# OpenJanus Windows Release ${{ steps.get_version.outputs.version }}\n",
+          "format": "markdown", "displayName": "Github Actions - OpenJanus"
         }' \
         ${{ secrets.WEBHOOK_URL }}
