@@ -6,7 +6,9 @@ from typing import Dict, Any
 from openjanus.utils.exceptions import (
     ApiKeyNotSetException, 
     ConfigFileNotFound,
+    ConfigKeyNotFound,
     DirectoryCreationException,
+    TtsMpvNotFoundException,
     TtsNotImplementedException
 )
 
@@ -64,6 +66,29 @@ def set_eleven_api_key() -> str:
         raise ApiKeyNotSetException("Elevenlabs")
     
 
+def check_mpv_path() -> str:
+    """Check the mpv path, first by checking the environment variable, then by checking the config file"""
+    import shutil
+    lib = shutil.which("mpv")
+    if lib is None:
+        try:
+            LOGGER.debug("Setting mpv path from config file")
+            config = load_config()
+            if not path.isfile(config["openjanus"]["mpv_path"]):
+                LOGGER.error("mpv.exe was not found")
+                raise TtsMpvNotFoundException()
+            else:
+                return config["openjanus"]["mpv_path"]
+        except KeyError:
+            LOGGER.error("The mpv path was not found in the environment variable or the config file")
+            raise ConfigKeyNotFound("openjanus/mpv_path")
+        except FileNotFoundError:
+            LOGGER.error("mpv.exe was not found")
+            raise TtsMpvNotFoundException()
+    else:
+        return lib
+    
+
 def get_tts_engine() -> str:
     """Get the TTS engine, first by checking the environment variable, then by checking the config file"""
     try:
@@ -79,6 +104,8 @@ def get_tts_engine() -> str:
             if config["openjanus"]["tts_engine"] not in ["elevenlabs", "whisper"]:
                 LOGGER.error("The TTS engine is not valid")
                 raise TtsNotImplementedException(config["openjanus"]["tts_engine"])
+            if config["openjanus"]["tts_engine"] == "whisper":
+                check_mpv_path()
             return config["openjanus"]["tts_engine"]
     except KeyError:
         LOGGER.error("The TTS engine was not found in the environment variable or the config file")
