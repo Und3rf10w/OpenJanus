@@ -38,3 +38,9 @@ class DirectoryCreationException(Exception):
     def __init__(self, directory: str):
         message = f"Failed to create the {directory} directory"
         super().__init__(message)
+
+
+class ListenKeyNotSupportedException(Exception):
+    def __init__(self, listen_key: str):
+        message = f"The listen key {listen_key} is not supported"
+        super().__init__(message)

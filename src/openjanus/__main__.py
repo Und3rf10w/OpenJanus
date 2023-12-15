@@ -16,6 +16,7 @@ import openjanus.app.config as openjanus_config
 from openjanus.chains.prompt import BASE_AGENT_SYSTEM_PROMPT_PREFIX
 from openjanus.toolkits.toolkit import get_openjanus_tools
 from openjanus.stt.whisper.recorder import Recorder
+from openjanus.utils.exceptions import ListenKeyNotSupportedException
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -58,9 +59,13 @@ async def main():
             try:
                 # Try to get a key for special keys
                 return keyboard.Key[key]
-            except KeyError:
-                # If the key is not a special key, then it must be a character
-                return keyboard.KeyCode.from_char(key)
+            except ValueError:
+                try:
+                    # If that fails, the key is not a special key, then it must be a character
+                    return keyboard.KeyCode.from_char(key)
+                except KeyError:
+                    LOGGER.error(f"The key {key} is not a valid key that can be used")
+                    raise ListenKeyNotSupportedException(key)
 
         def on_press(self, key):
             try:
