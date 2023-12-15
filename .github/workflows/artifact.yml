@@ -72,7 +72,13 @@ jobs:
     needs: build-linux
     runs-on: ubuntu-latest
 
-    steps:
+    - name: Install toml
+      run: pip install toml
+
+    - name: Get version
+      id: get_version
+      run: echo "::set-output name=version::$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -105,6 +111,13 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    - name: Install toml
+      run: pip install toml
+
+    - name: Get version
+      id: get_version
+      run: echo "::set-output name=version::$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
