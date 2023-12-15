@@ -72,8 +72,10 @@ jobs:
         name: OpenJanus-win-${{ steps.get_version.outputs.version }}.exe
         path: dist/__main__.exe
 
-  release-linux:
-    needs: build-linux
+  release:
+    needs: 
+    - build-linux
+    - build-windows
     runs-on: ubuntu-latest
 
     steps:
@@ -101,7 +103,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ steps.get_version.outputs.version }}
-        release_name: Release ${{ steps.get_version.outputs.version }}-linux
+        release_name: Release ${{ steps.get_version.outputs.version }}
         draft: false
         prerelease: false
 
@@ -121,39 +123,6 @@ jobs:
         asset_name: OpenJanus-linux-${{ steps.get_version.outputs.version }}
         asset_content_type: application/octet-stream
 
-  release-windows:
-    needs: build-windows
-    runs-on: windows-latest
-
-    steps:
-    - name: Checkout repo
-      uses: actions/checkout@v2
-
-    - name: Install toml
-      run: pip install toml
-
-    - name: Get version
-      id: get_version
-      run: |
-        echo "::set-output name=version::$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")"
-
-    - name: Tag Release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-      run: | 
-        git tag v${{ steps.getver.outputs.version }}
-
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.get_version.outputs.version }}
-        release_name: Release ${{ steps.get_version.outputs.version }}-windows
-        draft: false
-        prerelease: false
-
     - name: Download Artifact
       uses: actions/download-artifact@v2
       with:
@@ -170,34 +139,8 @@ jobs:
         asset_name: OpenJanus-win-${{ steps.get_version.outputs.version }}.exe
         asset_content_type: application/octet-stream
 
-  notify-release-linux:
-    needs: release-linux
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repo
-      uses: actions/checkout@v2
-
-    - name: Install toml
-      run: pip install toml
-
-    - name: Get version
-      id: get_version
-      run: |
-        echo "::set-output name=version::$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["version"])')"
-    
-    - name: Call Webhook
-      run: |
-        curl -X POST \
-        -H 'Content-Type: application/json' \
-        -d '{
-          "text": "[OpenJanus Linux Release ${{ steps.get_version.outputs.version }}](https://github.com/Und3rf10w/OpenJanus/releases/tag/${{ steps.get_version.outputs.version }})\n",
-          "format": "markdown", "displayName": "Github Actions - OpenJanus"
-        }' \
-        ${{ secrets.WEBHOOK_URL }}
-
-  notify-release-windows:
-    needs: release-windows
+  notify-release:
+    needs: release
     runs-on: ubuntu-latest
 
     steps:
@@ -217,7 +160,7 @@ jobs:
         curl -X POST \
         -H 'Content-Type: application/json' \
         -d '{
-          "text": "[OpenJanus Windows Release ${{ steps.get_version.outputs.version }}](https://github.com/Und3rf10w/OpenJanus/releases/tag/${{ steps.get_version.outputs.version }})\n",
+          "text": "[OpenJanus Release ${{ steps.get_version.outputs.version }}](https://github.com/Und3rf10w/OpenJanus/releases/tag/${{ steps.get_version.outputs.version }})\n",
           "format": "markdown", "displayName": "Github Actions - OpenJanus"
         }' \
         ${{ secrets.WEBHOOK_URL }}
