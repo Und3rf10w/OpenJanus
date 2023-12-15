@@ -11,13 +11,14 @@ OpenJanus works like so:
 - ATC
 - Onboard Ship IA capable of executing commands on the ship (e.g. "turn on my ship's lights")
 - Use whatever models you want (technically this is easy with Langchain, but prompting is on you)
+- Intergration with Cornerstone Item Finder
 - ???
 
 # Roadmap
 - [x] Easier configuration and installation
 - [ ] Documentation
 - [ ] Integration with sc-trade.tools
-- [ ] Integration with cstone.space
+- [x] Integration with cstone.space
 - [ ] Tests (lol)
 
 # How?

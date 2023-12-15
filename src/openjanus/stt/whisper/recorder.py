@@ -111,6 +111,9 @@ class Recorder:
             # output = asyncio.run(agent_chain.ainvoke({"input": "Turn the ship's lights on", "chat_history": []}))
             
             output = asyncio.run(agent_chain.ainvoke({"input": ''.join(combined_transcription), "chat_history": []}))
-            return output['output'][0]['response']
+            if isinstance(output['output'], list):
+                return output['output'][0]['response']
+            else:
+                return output['output']
         except Exception as e:
             LOGGER.error(f"Failed to transcribe: {str(e)}")
