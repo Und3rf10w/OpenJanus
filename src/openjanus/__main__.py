@@ -49,24 +49,21 @@ class KeyListener:
                 pass
 
         def on_release(self, key):
-            try:
-                if key == self.listen_key and self.recorder.is_recording:
-                    LOGGER.info("Recording button released")
-                    recording_path = self.recorder.stop_recording()
-                    self.record_key_pressed = False
-                    def run_async_process():
-                        loop = asyncio.new_event_loop()
-                        asyncio.set_event_loop(loop)
-                        try:
-                            loop.run_until_complete(self.recorder.transcribe_and_invoke(self.agent_chain, recording_path))
-                        finally:
-                            loop.close()
+            if key == self.listen_key and self.recorder.is_recording:
+                LOGGER.info("Recording button released")
+                self.record_key_pressed = False
+                recording_path = self.recorder.stop_recording()
+                
+                def run_async_process():
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    loop.run_until_complete(self.recorder.transcribe_and_invoke(self.agent_chain, recording_path))
+                    # loop.close()
 
-                    if recording_path:
-                        thread = threading.Thread(target=run_async_process)
-                        thread.start()
-            except Exception as e:
-                LOGGER.error("Raised an error when stopping recording", exc_info=e)    
+                if recording_path:
+                    thread = threading.Thread(target=run_async_process)
+                    thread.start()
+
 
 
 if __name__ == "__main__":
@@ -90,7 +87,7 @@ if __name__ == "__main__":
         tools=get_openjanus_tools(llm=chat_llm),
         llm=chat_llm,
         agent=chat_agent,
-        verbose=True
+        verbose=True,
     )
     recorder = Recorder()
     listen_key = config["openjanus"]["listen_key"]
@@ -103,5 +100,11 @@ if __name__ == "__main__":
         listen_key=listen_key
     ) as listener:
         listener.join()
-    listener.wait()
+
+    while True:
+        try:
+            pass
+        except KeyboardInterrupt:
+            break
+
 

@@ -29,7 +29,7 @@ class Recorder:
         self.output_naming_format = f"recording.{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}".replace(' ','_')
         self.is_recording = False
         self.frames = []
-        self.record_event = threading.Event()
+        # self.record_event = threading.Event()
         self.finished_recording_path = ""
 
     def callback(self,in_data, frame_count, time_info, status):
@@ -61,7 +61,7 @@ class Recorder:
         self.is_recording = True
         LOGGER.debug(f"self.is_recording: {self.is_recording}")
         self.stream.start_stream()
-        self.record_event.set()
+        # self.record_event.set()
 
     # def convert_to_mp3(self):
     #     sound = pydub.AudioSegment.from_wav(f"{self.record_path}{self.output_naming_format}.{self.recording_extension}")
@@ -70,7 +70,7 @@ class Recorder:
     #     LOGGER.debug(f"Converted {self.record_path}{self.output_naming_format}.{self.recording_extension} to {self.record_path}{self.output_naming_format}.mp3")
     
     def stop_recording(self) -> str:
-        self.record_event.clear()
+        # self.record_event.clear()
         self.is_recording = False
         LOGGER.info("Stopped Recording audio...")
         if self.recording_extension == "wav":
@@ -113,7 +113,11 @@ class Recorder:
             output = await agent_chain.ainvoke({"input": ''.join(combined_transcription), "chat_history": []})
             if isinstance(output['output'], list):
                 return output['output'][0]['response']
-            else:
+            if isinstance(output['output'], str):
                 return output['output']
-        except Exception as e:
-            LOGGER.error(f"Failed to transcribe: {str(e)}")
+            else:
+                return "Failed to parse output"
+        # except Exception as e:
+        #     LOGGER.error(f"Failed to transcribe: {str(e)}")
+        finally:
+            pass

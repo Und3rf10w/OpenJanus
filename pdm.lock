@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["cross_platform"]
 lock_version = "4.4"
-content_hash = "sha256:98024248629ce0e5fae781428774dca8fdea28008654aba1f5fa66d05e2a427d"
+content_hash = "sha256:68e7b451fa9ee0da089260813a34e450f62d9dea76105607c80523588a67c8b2"
 
 [[package]]
 name = "aiohttp"
@@ -558,20 +558,21 @@ files = [
 
 [[package]]
 name = "openai"
-version = "1.2.4"
+version = "1.4.0"
 requires_python = ">=3.7.1"
 summary = "The official Python library for the openai API"
 dependencies = [
-    "anyio<4,>=3.5.0",
+    "anyio<5,>=3.5.0",
     "distro<2,>=1.7.0",
     "httpx<1,>=0.23.0",
     "pydantic<3,>=1.9.0",
+    "sniffio",
     "tqdm>4",
     "typing-extensions<5,>=4.5",
 ]
 files = [
-    {file = "openai-1.2.4-py3-none-any.whl", hash = "sha256:53927a2ca276eec0a0efdc1ae829f74a51f49b7d3e14cc6f820aeafb0abfd802"},
-    {file = "openai-1.2.4.tar.gz", hash = "sha256:d99a474049376be431d9b4dec3a5c895dd76e19165748c5944e80b7905d1b1ff"},
+    {file = "openai-1.4.0-py3-none-any.whl", hash = "sha256:173e2a63822e73d6a8c971adacd98ed350301be755617b61b47d39e05b90a3f0"},
+    {file = "openai-1.4.0.tar.gz", hash = "sha256:b5561e897bf6b42d3876552e06ce0e7960688791ec4090ed0e780e56fe3f1848"},
 ]
 
 [[package]]

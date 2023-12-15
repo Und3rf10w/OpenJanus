@@ -44,7 +44,6 @@ class ItemFinderAgent(BaseOpenJanusConversationAgent):
     def from_llm_and_tools(
         cls,
         llm: BaseLanguageModel,
-        memory: BaseMemory | None = None,
         tools: Optional[Sequence[BaseTool]] = None,
         callback_manager: Optional[BaseCallbackManager] = None,
         output_parser: Optional[AgentOutputParser] = None,
@@ -69,7 +68,6 @@ class ItemFinderAgent(BaseOpenJanusConversationAgent):
             llm=llm,
             prompt=prompt,
             callback_manager=callback_manager,
-            # memory=memory,
         )
         tool_names = [tool.name for tool in tools]
         return cls(

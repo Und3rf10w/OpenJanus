@@ -7,7 +7,7 @@ authors = [
 ]
 dependencies = [
     "langchain",
-    "openai==1.2.4",
+    "openai>=1.4.0",
     "elevenlabs",
     "tiktoken>=0.5.1",
     "pydub>=0.25.1",

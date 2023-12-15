@@ -63,13 +63,12 @@ def item_finder_tool(llm: BaseLanguageModel, memory: BaseMemory, **kwargs) -> To
     """
     item_finder_chain = ItemFinderAgent.from_llm_and_tools(
         llm=llm,
-        # memory=memory,
     )
     item_finder_agent = AgentExecutor.from_agent_and_tools(
         agent=item_finder_chain,
         tools=get_item_finder_tools(),
         memory=memory,
-        callbacks=[AsyncOpenJanusOpenAIFunctionsAgentCallbackHandler(), OpenJanusOpenAIFunctionsAgentCallbackHandler()]
+        callbacks=[AsyncOpenJanusOpenAIFunctionsAgentCallbackHandler(), OpenJanusOpenAIFunctionsAgentCallbackHandler()],
     )
     item_finder_tool = Tool(
         name="Reply_Item_Finder",
