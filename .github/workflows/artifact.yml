@@ -103,10 +103,6 @@ jobs:
 
     - name: Download Artifact
       uses: actions/download-artifact@v2
-    - name: Display Artifact
-      run: ls -l
-    - name: Display Artifact Directory
-      run: pwd
 
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
@@ -114,7 +110,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: OpenJanus-linux-${{ steps.get_version.outputs.version }}
+        asset_path: /home/runner/work/OpenJanus/OpenJanus/OpenJanus-linux-${{ steps.get_version.outputs.version }}
         asset_name: OpenJanus-linux-${{ steps.get_version.outputs.version }}
         asset_content_type: application/octet-stream
 
@@ -124,7 +120,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: OpenJanus-win-${{ steps.get_version.outputs.version }}.exe
+        asset_path: /home/runner/work/OpenJanus/OpenJanus/OpenJanus-win-${{ steps.get_version.outputs.version }}.exe
         asset_name: OpenJanus-win-${{ steps.get_version.outputs.version }}.exe
         asset_content_type: application/octet-stream
 
