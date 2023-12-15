@@ -111,7 +111,6 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: OpenJanus-linux-${{ steps.get_version.outputs.version }}
-        path: OpenJanus-linux-${{ steps.get_version.outputs.version }}
 
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
@@ -127,7 +126,6 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: OpenJanus-win-${{ steps.get_version.outputs.version }}.exe
-        path: OpenJanus-win-${{ steps.get_version.outputs.version }}.exe
 
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
