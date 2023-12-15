@@ -1,13 +1,40 @@
-name: Build Executable
+name: Build Executables
 
 on:
   push:
     branches: [ workflow_testing ]
 
 jobs:
-  build:
-
+  build-linux:
     runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.11
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y portaudio19-dev gcc
+        python -m pip install --upgrade pip
+        pip install .
+        pip install pyinstaller
+
+    - name: Build Executable
+      run: |
+        pyinstaller --onefile __main__.py
+
+    - name: Upload Executable
+      uses: actions/upload-artifact@v2
+      with:
+        name: OpenJanus-linux
+        path: dist/__main__
+
+  build-windows:
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -30,5 +57,5 @@ jobs:
     - name: Upload Executable
       uses: actions/upload-artifact@v2
       with:
-        name: Executable
-        path: dist/__main__
+        name: OpenJanus-win.exe
+        path: dist/__main__.exe
