@@ -91,7 +91,7 @@ class Recorder:
                 return ""
         else:
             return ""
-    def transcribe_and_invoke(self, agent_chain: AgentExecutor, recording_path: str):
+    async def transcribe_and_invoke(self, agent_chain: AgentExecutor, recording_path: str):
         LOGGER.info("hit transcribe_and_invoke")
         try:
             # Construct a Blob from the recording file
@@ -110,7 +110,7 @@ class Recorder:
             # output = asyncio.run(agent_chain.ainvoke({"input": "Seraphim Station, this is john smith, requesting permission to land, over.", "chat_history": []}))
             # output = asyncio.run(agent_chain.ainvoke({"input": "Turn the ship's lights on", "chat_history": []}))
             
-            output = asyncio.run(agent_chain.ainvoke({"input": ''.join(combined_transcription), "chat_history": []}))
+            output = await agent_chain.ainvoke({"input": ''.join(combined_transcription), "chat_history": []})
             if isinstance(output['output'], list):
                 return output['output'][0]['response']
             else:
