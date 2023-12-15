@@ -2,7 +2,7 @@ name: Build Executable Releases
 
 on:
   push:
-    branches: [ workflow_testing ]
+    branches: [ master ]
 
 jobs:
   build-linux:
