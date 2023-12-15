@@ -59,7 +59,7 @@ async def main():
             try:
                 # Try to get a key for special keys
                 return keyboard.Key[key]
-            except ValueError:
+            except KeyError:
                 try:
                     # If that fails, the key is not a special key, then it must be a character
                     return keyboard.KeyCode.from_char(key)
