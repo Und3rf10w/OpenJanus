@@ -27,9 +27,6 @@ First, copy `config.example.toml` to `config.toml`.
 
 First, set the `listen_key` in `config.toml`. For a `fx` key, e.g. `f12`, you can set it to `"fx"` (e.g. `"f12"`). For other keys, you can set it to the key. You must wrap this in double quotation marks (`"`). Multi key input is not currently supported.
 
-> [!NOTE]
-> If the `listen_key` you selected is not supported, e.g. `/`, the application will raise an exception.
-
 Set the `tts_engine` in `config.toml`. This must be either `whisper`, or `elevenlabs`.
 
 Next, set your API key for whatever service(s) you're using in `config.toml`. This should be self-explanatory
