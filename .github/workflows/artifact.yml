@@ -72,6 +72,7 @@ jobs:
     needs: build-linux
     runs-on: ubuntu-latest
 
+    steps:
     - name: Install toml
       run: pip install toml
 
