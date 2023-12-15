@@ -1,6 +1,6 @@
 [openjanus]
-# Set the listen key. You can use something like `f12` for the `f` keys, or just set a string to a key you want to press.
-listen_key = "f12"
+# Set the listen key. You can use something like `f10` for the `f` keys, or just set a string to a key you want to press.
+listen_key = "f10"
 # The TTS engine to use, must be one of `whisper` or `elevenlabs`
 tts_engine = "elevenlabs"
 
