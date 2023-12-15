@@ -25,6 +25,7 @@ class OpenAIWhisperSpeaker(BaseTool):
     api_key: Optional[str]
     voice_id: Optional[Literal["alloy", "echo", "fable", "onyx", "nova", "shimmer"]] = "nova"
     voice_model: Optional[Union[str, Literal["tts-1", "tts-1-hd"]]]
+    output_dir: str = "recordings/"
     output_file_path: Optional[str] = ""
     verbose: bool = True
 
@@ -33,6 +34,7 @@ class OpenAIWhisperSpeaker(BaseTool):
             api_key: Optional[str] = None, 
             voice_id: Optional[Literal["alloy", "echo", "fable", "onyx", "nova", "shimmer"]] = "nova",
             voice_model: Optional[Union[str, Literal["tts-1", "tts-1-hd"]]] = "tts-1",
+            output_dir: str = "recordings/",
             *args,
             **kwargs
         ) -> None:
@@ -40,6 +42,7 @@ class OpenAIWhisperSpeaker(BaseTool):
         self.api_key = api_key
         self.voice_id = voice_id
         self.voice_model = voice_model
+        self.output_dir = output_dir
         self.output_file_path = ""
 
     def is_installed(self, lib_name: str) -> bool:
@@ -50,7 +53,7 @@ class OpenAIWhisperSpeaker(BaseTool):
 
     def set_recording_path(self):
         # TODO: Clean this up, set from config, etc
-        output_format = f"output.{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.mp3".replace(' ','_')
+        output_format = self.output_dir + f"output.{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.mp3".replace(' ','_')
         self.output_file_path = str(pathlib.PurePath(output_format))
 
     # Ripped from elevenlabs

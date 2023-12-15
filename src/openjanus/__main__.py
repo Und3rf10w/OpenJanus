@@ -12,8 +12,9 @@ from langchain.memory import ConversationSummaryBufferMemory
 from langchain.document_loaders.parsers import OpenAIWhisperParser
 
 
-from openjanus.toolkits.toolkit import get_openjanus_tools
+import openjanus.app.config as openjanus_config
 from openjanus.chains.prompt import BASE_AGENT_SYSTEM_PROMPT_PREFIX
+from openjanus.toolkits.toolkit import get_openjanus_tools
 from openjanus.stt.whisper.recorder import Recorder
 
 
@@ -22,6 +23,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 async def main():
+    config = openjanus_config.load_config()
     chat_llm = ChatOpenAI(
         model="gpt-3.5-turbo-1106",
         # model="gpt-4-1106-preview",
@@ -43,16 +45,27 @@ async def main():
         verbose=True
     )
     recorder = Recorder()
+    listen_key = config["openjanus"]["listen_key"]
     # TODO: Make the selected key selectable from the config file
     class KeyListener:
         def __init__(self, recorder: Recorder, agent_chain: AgentExecutor):
             self.recorder = recorder
             self.agent_chain = agent_chain
             self.record_key_pressed = False
+            self.listen_key = self.get_key(listen_key)
+
+        def get_key(self, key: str):
+            try:
+                # Try to get a key for special keys
+                return keyboard.Key[key]
+            except KeyError:
+                # If the key is not a special key, then it must be a character
+                return keyboard.KeyCode.from_char(key)
 
         def on_press(self, key):
             try:
-                if key == keyboard.Key.f12 and not self.recorder.is_recording:
+                if key == self.listen_key and not self.recorder.is_recording:
+                    self.record_key_pressed = True
                     LOGGER.info("Record button pressed")
                     self.recorder.start_recording()
             except AttributeError:
@@ -60,7 +73,7 @@ async def main():
 
         def on_release(self, key):
             try:
-                if key == keyboard.Key.f12 and self.recorder.is_recording:
+                if key == self.listen_key and self.recorder.is_recording:
                     LOGGER.info("Recording button released")
                     recording_path = self.recorder.stop_recording()
                     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
@@ -75,7 +88,8 @@ async def main():
     with keyboard.Listener(
         on_press=key_listener.on_press,
         on_release=key_listener.on_release,
-        suppress=False
+        suppress=False,
+        listen_key=listen_key
     ) as listener:
         listener.join()
 

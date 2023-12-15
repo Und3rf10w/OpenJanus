@@ -15,11 +15,20 @@ from langchain.schema.runnable.utils import (
 from langchain.schema.runnable.config import RunnableConfig
 from langchain.tools import Tool
 
-# from openjanus.tts.elevenlabs.chat import get_tool
-from openjanus.tts.whisper.chat import get_tool
+import openjanus.app.config as openjanus_config
+from openjanus.utils.exceptions import TtsNotImplementedException
 
 
 LOGGER = logging.getLogger(__name__)
+
+config = openjanus_config.load_config()
+tts_engine = openjanus_config.get_tts_engine()
+if tts_engine.lower() == "elevenlabs":
+    from openjanus.tts.elevenlabs.chat import get_tool
+elif tts_engine.lower() == "whisper":
+    from openjanus.tts.whisper.chat import get_tool
+else:
+    raise openjanus_config.TtsNotImplementedException(tts_engine)
 
 
 class AsyncOpenJanusOpenAIFunctionsAgentCallbackHandler(AsyncCallbackHandler):

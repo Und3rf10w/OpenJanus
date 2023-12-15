@@ -1,0 +1,12 @@
+[openjanus]
+# Set the listen key. You can use something like `f12` for the `f` keys, or just set a string to a key you want to press.
+listen_key = "f12"
+# The TTS engine to use, must be one of `whisper` or `elevenlabs`
+tts_engine = "elevenlabs"
+
+[openai]
+# Set your openai api key here
+api_key = "sk...."
+
+[elevenlabs]
+api_key = ""

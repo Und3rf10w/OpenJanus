@@ -8,7 +8,6 @@ import threading
 import wave
 
 from langchain.agents import AgentExecutor
-# from langchain.document_loaders.parsers import OpenAIWhisperParser
 from langchain.document_loaders.blob_loaders import Blob
 from langchain.schema import Document
 

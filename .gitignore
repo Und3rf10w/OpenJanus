@@ -15,3 +15,4 @@ settings.json
 .vscode
 .pdm.toml
 recordings/*
+config.toml
