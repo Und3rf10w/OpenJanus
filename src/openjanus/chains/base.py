@@ -4,6 +4,7 @@ import logging
 from typing import Iterator, Optional, Any, AsyncIterator, List, Dict
 from uuid import UUID
 
+from langchain.agents.conversational_chat.base import ConversationalChatAgent
 from langchain.agents.openai_functions_multi_agent.base import OpenAIMultiFunctionsAgent
 from langchain.callbacks.base import BaseCallbackHandler, AsyncCallbackHandler
 from langchain.chains import ConversationChain
@@ -56,7 +57,7 @@ class AsyncOpenJanusOpenAIFunctionsAgentCallbackHandler(AsyncCallbackHandler):
         """Run on agent end."""
         finish.return_values
         tts = get_tool()
-        await tts.arun({"query": finish.return_values['response']})
+        await tts.arun({"query": finish.return_values['output']})
 
 
 class OpenJanusOpenAIFunctionsAgentCallbackHandler(BaseCallbackHandler):
@@ -83,7 +84,7 @@ class OpenJanusOpenAIFunctionsAgentCallbackHandler(BaseCallbackHandler):
         """Run on agent end."""
         # finish.return_values
         tts = get_tool()
-        tts.run({"query": finish.return_values['response']})
+        tts.run({"query": finish.return_values['output']})
 
 
 class OpenJanusChainCallbackHandler(BaseCallbackHandler):
@@ -161,6 +162,10 @@ class BaseOpenJanusConversationChain(ConversationChain):
         tts = get_tool()
         response = await tts.arun({"stream": stream})
         return [{self.output_key: response}]
+    
+
+class BaseOpenJanusConversationAgent(ConversationalChatAgent, ABC):
+    callbacks = get_openjanus_agent_callbacks()
          
 
 

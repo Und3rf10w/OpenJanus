@@ -1,5 +1,10 @@
+import re
+from tabnanny import verbose
+from types import coroutine
 from typing import Dict
 
+
+from langchain.agents import AgentExecutor
 from langchain.chains import SequentialChain
 from langchain.chains.llm import LLMChain
 from langchain.chat_models.base import BaseChatModel
@@ -10,7 +15,7 @@ from langchain.schema import BaseMemory
 from langchain.schema.language_model import BaseLanguageModel
 from langchain.tools import Tool
 
-from openjanus.chains.base import AsyncOpenJanusChainCallbackHandler, OpenJanusChainCallbackHandler
+from openjanus.chains.base import AsyncOpenJanusChainCallbackHandler, OpenJanusChainCallbackHandler, AsyncOpenJanusOpenAIFunctionsAgentCallbackHandler, OpenJanusOpenAIFunctionsAgentCallbackHandler
 from openjanus.chains.atc.base import AtcChain
 from openjanus.chains.onboardia.base import (
     OnboardIaChain,
@@ -20,6 +25,8 @@ from openjanus.chains.onboardia.prompt import (
     ONBOARD_IA_KEYMAP_USER_PROMPT,
     ONBOARD_IA_KEYMAP_PROMPT
 )
+from openjanus.chains.item_finder.base import ItemFinderAgent
+from openjanus.chains.item_finder.base import _get_tools as get_item_finder_tools
 
 
 def atc_chain_tool(llm: BaseLanguageModel, memory: BaseMemory, **kwargs) -> Tool:
@@ -44,6 +51,36 @@ def atc_chain_tool(llm: BaseLanguageModel, memory: BaseMemory, **kwargs) -> Tool
         **kwargs
     )
     return atc_tool
+
+
+def item_finder_tool(llm: BaseLanguageModel, memory: BaseMemory, **kwargs) -> Tool:
+    """
+    Generate a tool to find items
+
+    :param llm: The LLM object to use
+    :param memory: A memory object to use
+    :return: A tool with an Item Finder agent
+    """
+    item_finder_chain = ItemFinderAgent.from_llm_and_tools(
+        llm=llm,
+        # memory=memory,
+    )
+    item_finder_agent = AgentExecutor.from_agent_and_tools(
+        agent=item_finder_chain,
+        tools=get_item_finder_tools(),
+        memory=memory,
+        callbacks=[AsyncOpenJanusOpenAIFunctionsAgentCallbackHandler(), OpenJanusOpenAIFunctionsAgentCallbackHandler()]
+    )
+    item_finder_tool = Tool(
+        name="Reply_Item_Finder",
+        description="Use this tool to assume the role of an Item Finder to help the user find an item. Pass the user's entire question unaltertered to this tool.",
+        func=item_finder_agent.run,
+        coroutine=item_finder_agent.arun,
+        return_direct=True,
+        verbose=True,
+        **kwargs
+    )
+    return item_finder_tool
 
 
 class InnerInputModel(BaseModel):
@@ -97,6 +134,7 @@ def get_openjanus_tools(llm:BaseChatModel) -> list:
         tools = [
             atc_chain_tool(llm=llm, memory=ConversationSummaryBufferMemory(llm=llm, return_messages=True, memory_key="chat_history")),
             onboard_ia_chain_tool(llm=llm, memory=ConversationSummaryBufferMemory(llm=llm, return_messages=True, memory_key="chat_history", output_key="response", input_key="input")),
+            item_finder_tool(llm=llm, memory=ConversationSummaryBufferMemory(llm=llm, return_messages=True, memory_key="chat_history"))
         ]
     except ImportError:
         pass

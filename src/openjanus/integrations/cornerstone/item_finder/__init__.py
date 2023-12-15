@@ -21,6 +21,9 @@ class ItemFinder(Integration):
 
     @cached(cache=TTLCache(maxsize=1024, ttl=3600))
     def search_items(self, query: str) -> List[Dict[str, Any]]:
+        """
+        Search for items by name, returning a list of items that match the query. Input should be minimal, as the search is fuzzy.
+        """
         response = self.session.get(urljoin(self.base_url, f"GetSearch"))
         response.raise_for_status()
         items = response.json()
@@ -89,7 +92,9 @@ class ItemFinder(Integration):
         }
 
     def get_item_details_and_data(self, item_id: str) -> Dict[str, Any]:
-        """Wrap the get_item_details method to also extract location and description data."""
+        """
+        Get the details of an item, including location and description data
+        """
         item_page_html = self.get_item_details(item_id)
         if item_page_html:
             parsed_data = self.parse_item_page(item_page_html)
