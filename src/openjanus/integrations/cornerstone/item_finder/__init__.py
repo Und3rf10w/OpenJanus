@@ -64,7 +64,7 @@ class ItemFinder(Integration):
         # Extract location data
         location_table = soup.find('table', id='table')
         if location_table:
-            for row in location_table.find_all('tr')[1:]:  # Skip header row
+            for row in location_table.find_all('tr')[1:]:  # type: ignore
                 cols = row.find_all('td')
                 location_info = {
                     "location": cols[0].get_text(strip=True),
@@ -90,7 +90,7 @@ class ItemFinder(Integration):
             general_table = general_label.find_next('table')
             if general_table is not None:
                 general_data = []
-                for row in general_table.find_all('tr'):
+                for row in general_table.find_all('tr'): # type: ignore
                     cols = row.find_all('td')
                     if len(cols) > 1:  # Skip rows without enough columns
                         row_data = {

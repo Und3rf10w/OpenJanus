@@ -14,6 +14,7 @@ from langchain.pydantic_v1 import BaseModel, Field
 from langchain.schema import BaseMemory
 from langchain.schema.language_model import BaseLanguageModel
 from langchain.tools import Tool
+from openjanus.chains import planetary_survey
 
 from openjanus.chains.base import AsyncOpenJanusChainCallbackHandler, OpenJanusChainCallbackHandler, AsyncOpenJanusOpenAIFunctionsAgentCallbackHandler, OpenJanusOpenAIFunctionsAgentCallbackHandler
 from openjanus.chains.atc.base import AtcChain
@@ -27,6 +28,8 @@ from openjanus.chains.onboardia.prompt import (
 )
 from openjanus.chains.item_finder.base import ItemFinderAgent
 from openjanus.chains.item_finder.base import _get_tools as get_item_finder_tools
+from openjanus.chains.planetary_survey.base import PlanetarySurveyAgent
+from openjanus.chains.planetary_survey.base import _get_tools as get_planetary_survey_tools
 
 
 def atc_chain_tool(llm: BaseLanguageModel, memory: BaseMemory, **kwargs) -> Tool:
@@ -82,6 +85,35 @@ def item_finder_tool(llm: BaseLanguageModel, memory: BaseMemory, **kwargs) -> To
     return item_finder_tool
 
 
+def planetary_survey_tool(llm: BaseLanguageModel, memory: BaseMemory, **kwargs) -> Tool:
+    """
+    Generate a tool to find locations
+    
+    :param llm: The LLM object to use
+    :param memory: A memory object to use
+    :return: A tool with a Planetary Survey agent
+    """
+    planetary_survey_chain = PlanetarySurveyAgent.from_llm_and_tools(
+        llm=llm,
+    )
+    planetary_survey_agent = AgentExecutor.from_agent_and_tools(
+        agent=planetary_survey_chain,
+        tools=get_planetary_survey_tools(),
+        memory=memory,
+        callbacks=[AsyncOpenJanusOpenAIFunctionsAgentCallbackHandler(), OpenJanusOpenAIFunctionsAgentCallbackHandler()],
+    )
+    planetary_survey_tool = Tool(
+        name="Reply_Planetary_Survey",
+        description="Use this tool to assume the role of a Planetary Surveyor to help the user find a location. Pass the user's entire question unaltertered to this tool.",
+        func=planetary_survey_agent.run,
+        coroutine=planetary_survey_agent.arun,
+        return_direct=True,
+        verbose=True,
+        **kwargs
+    )
+    return planetary_survey_tool
+
+
 class InnerInputModel(BaseModel):
     input: str
 
@@ -133,7 +165,8 @@ def get_openjanus_tools(llm:BaseChatModel) -> list:
         tools = [
             atc_chain_tool(llm=llm, memory=ConversationSummaryBufferMemory(llm=llm, return_messages=True, memory_key="chat_history")),
             onboard_ia_chain_tool(llm=llm, memory=ConversationSummaryBufferMemory(llm=llm, return_messages=True, memory_key="chat_history", output_key="response", input_key="input")),
-            item_finder_tool(llm=llm, memory=ConversationSummaryBufferMemory(llm=llm, return_messages=True, memory_key="chat_history"))
+            item_finder_tool(llm=llm, memory=ConversationSummaryBufferMemory(llm=llm, return_messages=True, memory_key="chat_history")),
+            planetary_survey_tool(llm=llm, memory=ConversationSummaryBufferMemory(llm=llm, return_messages=True, memory_key="chat_history"))
         ]
     except ImportError:
         pass
