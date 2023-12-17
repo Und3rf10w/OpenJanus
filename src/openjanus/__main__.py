@@ -1,6 +1,5 @@
 import asyncio
 
-import concurrent.futures
 import logging
 from pynput import keyboard
 import threading
@@ -15,6 +14,7 @@ from openjanus.chains.prompt import BASE_AGENT_SYSTEM_PROMPT_PREFIX
 from openjanus.toolkits.toolkit import get_openjanus_tools
 from openjanus.stt.whisper.recorder import Recorder
 from openjanus.utils.exceptions import ListenKeyNotSupportedException
+from openjanus.utils.text_coloring import YELLOW_TEXT, GREEN_TEXT, RESET_TEXT
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -56,12 +56,10 @@ class KeyListener:
                 recording_path = self.recorder.stop_recording()
                 
                 def run_async_process():
-                    yellow = '\033[93m'
-                    reset = '\033[0m'
                     loop = asyncio.new_event_loop()
                     asyncio.set_event_loop(loop)
                     loop.run_until_complete(self.recorder.transcribe_and_invoke(self.agent_chain, recording_path))
-                    print(yellow + "Ready to record again" + reset)
+                    print(YELLOW_TEXT + "Ready to record next interaction" + RESET_TEXT)
                     # loop.close()
 
                 if recording_path:
@@ -72,7 +70,13 @@ class KeyListener:
 
 if __name__ == "__main__":
     print(banner())
+    LOGGER.info("Performing startup checks")
     config = openjanus_config.load_config()
+    config_health_check = openjanus_config.startup_checks()
+    if not config_health_check:
+        LOGGER.error("Startup checks failed")
+        exit(1)
+    LOGGER.info("Startup checks passed, configuration loaded")
     chat_llm = ChatOpenAI(
         model="gpt-3.5-turbo-1106",
         # model="gpt-4-1106-preview",
@@ -103,6 +107,8 @@ if __name__ == "__main__":
         suppress=False,
         listen_key=listen_key
     ) as listener:
+        print(f"{GREEN_TEXT}Ready!{RESET_TEXT}")
+        print(f"{YELLOW_TEXT}Press {GREEN_TEXT}{listen_key.upper()}{YELLOW_TEXT} to start recording" + RESET_TEXT)
         listener.join()
 
     while True:

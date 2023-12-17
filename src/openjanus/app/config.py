@@ -105,15 +105,29 @@ def get_tts_engine() -> str:
                 LOGGER.error("The TTS engine is not valid")
                 raise TtsNotImplementedException(config["openjanus"]["tts_engine"])
             if config["openjanus"]["tts_engine"] == "whisper":
+                _ = set_openai_api_key()  # This is actually a safe way to check if the API key is set for us to use
                 check_mpv_path()
             return config["openjanus"]["tts_engine"]
     except KeyError:
         LOGGER.error("The TTS engine was not found in the environment variable or the config file")
-        raise ConfigFileNotFound("TTS engine")
+        raise ConfigKeyNotFound("openjanus/tts_engine")
+    
+
+def get_recordings_dir() -> str:
+    """Get the recordings directory by checking the config file"""
+    try:
+        LOGGER.debug("Getting recordings directory from config file")
+        config = load_config()
+        recordings_dir = config["openjanus"]["recordings_directory"]
+        return path.relpath(recordings_dir)
+    except KeyError:
+        LOGGER.error("The recordings directory was not found in the environment variable or the config file")
+        raise ConfigKeyNotFound("openjanus/recordings_directory")
 
 
 def ensure_recordings_dir_exists():
-    recordings_dir = "recordings"
+    """Ensure that the recordings directory exists"""
+    recordings_dir = get_recordings_dir()
     if not path.exists(recordings_dir):
         try:
             makedirs(recordings_dir)
@@ -121,3 +135,11 @@ def ensure_recordings_dir_exists():
             LOGGER.error(f"Failed to create the {recordings_dir} directory", exc_info=e)
             raise DirectoryCreationException(f"Failed to create the {recordings_dir} directory") from e
 
+
+def startup_checks() -> bool:
+    """Perform startup checks
+    
+    :returns: True if all checks pass"""
+    _ = get_tts_engine()
+    _ = ensure_recordings_dir_exists()
+    return True  # Otherwise it'll error anyways
