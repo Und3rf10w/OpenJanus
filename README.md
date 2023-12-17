@@ -44,5 +44,5 @@ I prefer agentic architectures when it comes to AI tooling, and having a solutio
 At this time I am not providing a license, but am providing the codebase. Depending on how things go, I'll decide to provide a license.
 
 # I want to play Star Citizen, but don't have an account
-Haven't tried Star Citizen yet, but want to check it out and giving OpenJanus a try?
+Haven't tried Star Citizen yet, but want to check it out and give OpenJanus a try?
 I would sincerely appreciate if you [used my referral code to create your account](https://robertsspaceindustries.com/enlist?referral=STAR-PVSB-Z7GR)!
