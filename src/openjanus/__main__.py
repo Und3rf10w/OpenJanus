@@ -1,4 +1,5 @@
 import asyncio
+from cgitb import reset
 
 import concurrent.futures
 import logging
@@ -10,6 +11,7 @@ from langchain.agents.conversational_chat.base import ConversationalChatAgent
 from langchain.chat_models import ChatOpenAI
 
 import openjanus.app.config as openjanus_config
+from openjanus.app.banner import banner
 from openjanus.chains.prompt import BASE_AGENT_SYSTEM_PROMPT_PREFIX
 from openjanus.toolkits.toolkit import get_openjanus_tools
 from openjanus.stt.whisper.recorder import Recorder
@@ -55,9 +57,12 @@ class KeyListener:
                 recording_path = self.recorder.stop_recording()
                 
                 def run_async_process():
+                    yellow = '\033[93m'
+                    reset = '\033[0m'
                     loop = asyncio.new_event_loop()
                     asyncio.set_event_loop(loop)
                     loop.run_until_complete(self.recorder.transcribe_and_invoke(self.agent_chain, recording_path))
+                    print(yellow + "Ready to record again" + reset)
                     # loop.close()
 
                 if recording_path:
@@ -67,7 +72,7 @@ class KeyListener:
 
 
 if __name__ == "__main__":
-
+    print(banner())
     config = openjanus_config.load_config()
     chat_llm = ChatOpenAI(
         model="gpt-3.5-turbo-1106",
