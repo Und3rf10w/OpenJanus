@@ -13,6 +13,7 @@ from langchain.schema import Document
 
 # This is to support oai package >=1.0.0
 from openjanus.stt.whisper.parser import OpenAIWhisperParser
+from openjanus.app.config import get_recordings_dir
 
 
 LOGGER = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ class Recorder:
         self.format = pyaudio.paInt16
         self.channels = 1
         self.rate = 44100
-        self.record_path = "recordings"
+        self.record_path = get_recordings_dir()
         self.recording_extension = "wav"
         self.output_naming_format = f"recording.{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}".replace(' ','_')
         self.is_recording = False

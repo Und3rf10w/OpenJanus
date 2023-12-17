@@ -4,14 +4,11 @@ import logging
 import pathlib
 import shutil
 import subprocess
-from typing import Any, Coroutine, Dict, Optional, Union, Iterator, Generator, Literal
+from typing import Any, Optional, Union, Iterator, Literal
 
-from langchain.callbacks.manager import CallbackManagerForToolRun, AsyncCallbackManagerForToolRun
-from langchain.document_loaders.blob_loaders import Blob
-from langchain.pydantic_v1 import root_validator
 from langchain.tools.base import BaseTool
-from langchain.utils import get_from_dict_or_env
-from langchain.schema import Document
+
+from openjanus.app.config import get_recordings_dir
 
 
 LOGGER = logging.getLogger(__name__)
@@ -25,7 +22,7 @@ class OpenAIWhisperSpeaker(BaseTool):
     api_key: Optional[str]
     voice_id: Optional[Literal["alloy", "echo", "fable", "onyx", "nova", "shimmer"]] = "nova"
     voice_model: Optional[Union[str, Literal["tts-1", "tts-1-hd"]]]
-    output_dir: str = "recordings/"
+    output_dir: str = get_recordings_dir()
     output_file_path: Optional[str] = ""
     verbose: bool = True
 
@@ -34,7 +31,7 @@ class OpenAIWhisperSpeaker(BaseTool):
             api_key: Optional[str] = None, 
             voice_id: Optional[Literal["alloy", "echo", "fable", "onyx", "nova", "shimmer"]] = "nova",
             voice_model: Optional[Union[str, Literal["tts-1", "tts-1-hd"]]] = "tts-1",
-            output_dir: str = "recordings/",
+            output_dir: str = get_recordings_dir(),
             *args,
             **kwargs
         ) -> None:
@@ -145,8 +142,8 @@ class OpenAIWhisperSpeaker(BaseTool):
 
         try:
             response = openai.audio.speech.create(
-                model=self.voice_model,
-                voice=self.voice_id,
+                model=self.voice_model,  # type: ignore
+                voice=self.voice_id,  # type: ignore
                 input=query
             )
             # Write the response to a file directly, not used, but left here for prosperity
@@ -156,7 +153,7 @@ class OpenAIWhisperSpeaker(BaseTool):
             audio = self.stream_audio(audio_stream=response.iter_bytes())
 
             # Write the response to a file
-            with open(self.output_file_path, 'wb') as f:
+            with open(self.output_file_path, 'wb') as f:  # type: ignore
                 f.write(audio)
             
             LOGGER.debug(f"Wrote response to {self.output_file_path}")
@@ -208,7 +205,7 @@ class OpenAIWhisperSpeaker(BaseTool):
                     LOGGER.debug(chunk_text)
                 self.stream_audio(audio_stream=iter([audio_bytes]))
                 LOGGER.info("Ending audio stream")
-                with open(self.output_file_path, 'wb') as f:
+                with open(self.output_file_path, 'wb') as f:  # type: ignore
                     f.write(audio_bytes)
                 return chunk_text
             except TypeError:
@@ -217,8 +214,8 @@ class OpenAIWhisperSpeaker(BaseTool):
         async def process_chunks(chunk_text):
             audio_bytes = []
             audio_chunk = openai.audio.speech.create(
-                model=self.voice_model,
-                voice=self.voice_id,
+                model=self.voice_model,  # type: ignore
+                voice=self.voice_id,  # type: ignore
                 input=chunk_text
             )
             audio_bytes.append(audio_chunk.content)
