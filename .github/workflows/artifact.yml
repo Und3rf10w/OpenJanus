@@ -145,7 +145,7 @@ jobs:
         curl -X POST \
         -H 'Content-Type: application/json' \
         -d '{
-          "text": "[OpenJanus Release ${{ steps.get_version.outputs.version }}](https://github.com/Und3rf10w/OpenJanus/releases/tag/${{ steps.get_version.outputs.version }})\n",
+          "text": "Published [OpenJanus ${{ steps.get_version.outputs.version }}](https://github.com/Und3rf10w/OpenJanus/releases/tag/${{ steps.get_version.outputs.version }})!\n",
           "format": "markdown", "displayName": "Github Actions - OpenJanus"
         }' \
         ${{ secrets.WEBHOOK_URL }}
