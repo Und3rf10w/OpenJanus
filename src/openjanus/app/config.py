@@ -141,23 +141,23 @@ def get_elevenlabs_config() -> Dict[str, Any]:
         LOGGER.debug("Getting elevenlabs config from config file")
         config = load_config()
         set_eleven_api_key()
-        if not config["elevenlabs"]["voice"]:
+        if not config["elevenlabs"]["elevenlabs_voice_id"]:
             LOGGER.warning("The elevenlabs voice was not set, using the default voice")
             from openjanus.tts.elevenlabs.async_patch import DEFAULT_VOICE
-            config["elevenlabs"]["voice"] = DEFAULT_VOICE
-        if not config["elevenlabs"]['stability']:
+            config["elevenlabs"]["elevenlabs_voice_id"] = DEFAULT_VOICE
+        if not config["elevenlabs"]['elevenlabs_stability']:
             LOGGER.warning("The elevenlabs stability was not set, using the default stability")
-            config["elevenlabs"]["stability"] = 0.5
-        if not config["elevenlabs"]['similarity_boost']:
+            config["elevenlabs"]["elevenlabs_stability"] = 0.5
+        if not config["elevenlabs"]['elevenlabs_similarity_boost']:
             LOGGER.warning("The elevenlabs similarity boost was not set, using the default similarity boost")
-            config["elevenlabs"]["similarity_boost"] = 0.75
-        if not config["elevenlabs"]['style']:
+            config["elevenlabs"]["elevenlabs_similarity_boost"] = 0.75
+        if not config["elevenlabs"]['elevenlabs_style']:
             LOGGER.warning("The elevenlabs style was not set, using the default style")
-            config["elevenlabs"]["style"] = 0
-        if not config["elevenlabs"]['use_speaker_boost'] or config["elevenlabs"]['use_speaker_boost'].lower() != "true":
-            config["elevenlabs"]["use_speaker_boost"] = False
-        elif config["elevenlabs"]['use_speaker_boost'].lower() == "true":
-            config["elevenlabs"]["use_speaker_boost"] = True
+            config["elevenlabs"]["elevenlabs_style"] = 0
+        if not config["elevenlabs"]['elevenlabs_use_speaker_boost'] or config["elevenlabs"]['use_speaker_boost'].lower() != "true":
+            config["elevenlabs"]["elevenlabs_use_speaker_boost"] = False
+        elif config["elevenlabs"]['elevenlabs_use_speaker_boost'].lower() == "true":
+            config["elevenlabs"]["elevenlabs_use_speaker_boost"] = True
         else:
             LOGGER.warning("The elevenlabs use speaker boost was misconfigured, using the default use speaker boost")
             config["elevenlabs"]["use_speaker_boost"] = False
@@ -172,15 +172,15 @@ def get_openai_whisper_config() -> Dict[str, Any]:
     try:
         LOGGER.debug("Getting openai whisper config from config file")
         config = load_config()
-        if not config["openai"]["whisper"]["voice_id"]:
+        if not config["openai"]["whisper"]["whisper_voice_id"]:
             LOGGER.warning("The openai whisper voice id was not set, using the default voice id")
-            config["openai"]["whisper"]["voice_id"] = "nova"
-        if not config["openai"]["whisper"]["voice_model"]:
+            config["openai"]["whisper"]["whisper_voice_id"] = "nova"
+        if not config["openai"]["whisper"]["whisper_voice_model"]:
             LOGGER.warning("The openai whisper voice model was not set, using the default voice model")
-            config["openai"]["whisper"]["voice_model"] = "tts-1"
-        if not config["openai"]["whisper"]["engine"]:
+            config["openai"]["whisper"]["whisper_voice_model"] = "tts-1"
+        if not config["openai"]["whisper"]["whisper_engine"]:
             LOGGER.warning("The openai whisper engine was not set, using the default engine")
-            config["openai"]["whisper"]["engine"] = "whisper-1"
+            config["openai"]["whisper"]["whisper_engine"] = "whisper-1"
         return config["openai"]["whisper"]
     except KeyError:
         LOGGER.error("The openai whisper config was not found in the environment variable or the config file")
