@@ -166,6 +166,22 @@ def get_elevenlabs_config() -> Dict[str, Any]:
     except KeyError:
         LOGGER.error("The elevenlabs config was not found in the environment variable or the config file")
         raise ConfigKeyNotFound("elevenlabs")
+    
+def get_openai_whisper_config() -> Dict[str, Any]:
+    """Get the openai whisper config"""
+    try:
+        LOGGER.debug("Getting openai whisper config from config file")
+        config = load_config()
+        if not config["openai"]["whisper"]["voice_id"]:
+            LOGGER.warning("The openai whisper voice id was not set, using the default voice id")
+            config["openai"]["whisper"]["voice_id"] = "nova"
+        if not config["openai"]["whisper"]["voice_model"]:
+            LOGGER.warning("The openai whisper voice model was not set, using the default voice model")
+            config["openai"]["whisper"]["voice_model"] = "tts-1"
+        return config["openai"]["whisper"]
+    except KeyError:
+        LOGGER.error("The openai whisper config was not found in the environment variable or the config file")
+        raise ConfigKeyNotFound("openai/whisper")
 
 
 def startup_checks() -> bool:

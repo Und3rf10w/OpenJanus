@@ -13,6 +13,10 @@ api_key = "sk...."
 [openai.whisper]
 # Set the path to `mpv.exe` if it's not already in your PATH. Only matters if `tts_engine` == `whisper`
 # mpv_path = mpv.exe
+# Which openai whisper voice ID to use, defaults to "nova" if not set
+voice_id = "nova"
+# Which openai whisper engine ID to use, defaults to "tts-1" if not set
+voice_model = "tts-1"
 
 [elevenlabs]
 api_key = ""

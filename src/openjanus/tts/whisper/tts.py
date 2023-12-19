@@ -9,6 +9,7 @@ from typing import Any, Optional, Union, Iterator, Literal
 from langchain.tools.base import BaseTool
 
 from openjanus.app.config import get_recordings_dir
+from openjanus.app.config import get_openai_whisper_config
 
 
 LOGGER = logging.getLogger(__name__)
@@ -36,9 +37,10 @@ class OpenAIWhisperSpeaker(BaseTool):
             **kwargs
         ) -> None:
         super().__init__(*args, **kwargs)
+        self.config = get_openai_whisper_config()
         self.api_key = api_key
-        self.voice_id = voice_id
-        self.voice_model = voice_model
+        self.voice_id = self.config.get('voice_id', voice_id)
+        self.voice_model = self.config.get('voice_model', voice_model)
         self.output_dir = output_dir
         self.output_file_path = ""
 
