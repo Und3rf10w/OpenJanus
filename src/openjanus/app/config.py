@@ -74,14 +74,14 @@ def check_mpv_path() -> str:
         try:
             LOGGER.debug("Setting mpv path from config file")
             config = load_config()
-            if not path.isfile(config["openjanus"]["mpv_path"]):
+            if not path.isfile(config["openai"]["whisper"]["mpv_path"]):
                 LOGGER.error("mpv.exe was not found")
                 raise TtsMpvNotFoundException()
             else:
-                return config["openjanus"]["mpv_path"]
+                return config["openai"]["whisper"]["mpv_path"]
         except KeyError:
             LOGGER.error("The mpv path was not found in the environment variable or the config file")
-            raise ConfigKeyNotFound("openjanus/mpv_path")
+            raise ConfigKeyNotFound("openai/whisper/mpv_path")
         except FileNotFoundError:
             LOGGER.error("mpv.exe was not found")
             raise TtsMpvNotFoundException()

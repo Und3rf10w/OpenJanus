@@ -9,6 +9,8 @@ recordings_directory = "recordings"
 [openai]
 # Set your openai api key here
 api_key = "sk...."
+
+[openai.whisper]
 # Set the path to `mpv.exe` if it's not already in your PATH. Only matters if `tts_engine` == `whisper`
 # mpv_path = mpv.exe
 
