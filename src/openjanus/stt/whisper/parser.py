@@ -6,7 +6,10 @@ from langchain.document_loaders.base import BaseBlobParser
 from langchain.document_loaders.blob_loaders import Blob
 from langchain.schema import Document
 
-logger = logging.getLogger(__name__)
+from openjanus.app.config import get_openai_whisper_config
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class OpenAIWhisperParser(BaseBlobParser):
@@ -15,6 +18,7 @@ class OpenAIWhisperParser(BaseBlobParser):
 
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key
+        self.config = get_openai_whisper_config()
 
     def lazy_parse(self, blob: Blob) -> Iterator[Document]:
         """Lazily parse the blob."""
@@ -58,18 +62,18 @@ class OpenAIWhisperParser(BaseBlobParser):
                 file_obj.name = f"part_{split_number}.mp3"
 
             # Transcribe
-            print(f"Transcribing part {split_number+1}!")
+            LOGGER.debug(f"Transcribing part {split_number+1}!")
             attempts = 0
             while attempts < 3:
                 try:
-                    transcript = openai.audio.transcriptions.create(model="whisper-1", file=file_obj)
+                    transcript = openai.audio.transcriptions.create(model=self.config.get('engine', "whisper-1"), file=file_obj)
                     break
                 except Exception as e:
                     attempts += 1
-                    print(f"Attempt {attempts} failed. Exception: {str(e)}")
+                    LOGGER.error(f"Attempt {attempts} failed. Exception: {str(e)}")
                     time.sleep(5)
             else:
-                print("Failed to transcribe after 3 attempts.")
+                LOGGER.error("Failed to transcribe after 3 attempts.")
                 continue
 
             yield Document(

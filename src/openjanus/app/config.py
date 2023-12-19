@@ -178,6 +178,9 @@ def get_openai_whisper_config() -> Dict[str, Any]:
         if not config["openai"]["whisper"]["voice_model"]:
             LOGGER.warning("The openai whisper voice model was not set, using the default voice model")
             config["openai"]["whisper"]["voice_model"] = "tts-1"
+        if not config["openai"]["whisper"]["engine"]:
+            LOGGER.warning("The openai whisper engine was not set, using the default engine")
+            config["openai"]["whisper"]["engine"] = "whisper-1"
         return config["openai"]["whisper"]
     except KeyError:
         LOGGER.error("The openai whisper config was not found in the environment variable or the config file")

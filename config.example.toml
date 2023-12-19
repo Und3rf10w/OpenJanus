@@ -17,6 +17,8 @@ api_key = "sk...."
 voice_id = "nova"
 # Which openai whisper engine ID to use, defaults to "tts-1" if not set
 voice_model = "tts-1"
+# Which openai whisper TTS engine to use, defaults to `whisper-1` if not set
+engine = "whisper-1"
 
 [elevenlabs]
 api_key = ""
