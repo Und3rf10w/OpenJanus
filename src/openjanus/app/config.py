@@ -16,6 +16,8 @@ from openjanus.utils.exceptions import (
 LOGGER = logging.getLogger(__name__)
 
 
+# TODO: While all of these helper functions are slick and whatnot, the config probably needs to be it's own class that importing modules can easily add their own config grabbing functions to. Only base helper functions, like those related to engines can use.
+
 def load_config() -> Dict[str, Any]:
     """Load the config file"""
     try:
