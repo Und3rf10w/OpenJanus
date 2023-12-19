@@ -134,6 +134,38 @@ def ensure_recordings_dir_exists():
         except Exception as e:
             LOGGER.error(f"Failed to create the {recordings_dir} directory", exc_info=e)
             raise DirectoryCreationException(f"Failed to create the {recordings_dir} directory") from e
+        
+def get_elevenlabs_config() -> Dict[str, Any]:
+    """Get the elevenlabs config"""
+    try:
+        LOGGER.debug("Getting elevenlabs config from config file")
+        config = load_config()
+        set_eleven_api_key()
+        if not config["elevenlabs"]["voice"]:
+            LOGGER.warning("The elevenlabs voice was not set, using the default voice")
+            from openjanus.tts.elevenlabs.async_patch import DEFAULT_VOICE
+            config["elevenlabs"]["voice"] = DEFAULT_VOICE
+        if not config["elevenlabs"]['stability']:
+            LOGGER.warning("The elevenlabs stability was not set, using the default stability")
+            config["elevenlabs"]["stability"] = 0.5
+        if not config["elevenlabs"]['similarity_boost']:
+            LOGGER.warning("The elevenlabs similarity boost was not set, using the default similarity boost")
+            config["elevenlabs"]["similarity_boost"] = 0.75
+        if not config["elevenlabs"]['style']:
+            LOGGER.warning("The elevenlabs style was not set, using the default style")
+            config["elevenlabs"]["style"] = 0
+        if not config["elevenlabs"]['use_speaker_boost'] or config["elevenlabs"]['use_speaker_boost'].lower() != "true":
+            config["elevenlabs"]["use_speaker_boost"] = False
+        elif config["elevenlabs"]['use_speaker_boost'].lower() == "true":
+            config["elevenlabs"]["use_speaker_boost"] = True
+        else:
+            LOGGER.warning("The elevenlabs use speaker boost was misconfigured, using the default use speaker boost")
+            config["elevenlabs"]["use_speaker_boost"] = False
+        return config["elevenlabs"]
+            
+    except KeyError:
+        LOGGER.error("The elevenlabs config was not found in the environment variable or the config file")
+        raise ConfigKeyNotFound("elevenlabs")
 
 
 def startup_checks() -> bool:

@@ -7,6 +7,7 @@ from elevenlabs import Voice, VoiceSettings
 from langchain.schema.language_model import BaseLanguageModel
 from langchain.schema.messages import BaseMessage
 
+from openjanus.app.config import get_elevenlabs_config
 from openjanus.tts.elevenlabs.tts import ElevenLabsText2SpeechTool
 from openjanus.tts.elevenlabs.async_patch import DEFAULT_VOICE
 
@@ -30,13 +31,14 @@ def run_chat_message(tts: ElevenLabsText2SpeechTool, chain: BaseLanguageModel, m
 
 
 def get_tool() -> ElevenLabsText2SpeechTool:
+    elevenlabs_config = get_elevenlabs_config()
     set_api_key(getenv("ELEVEN_API_KEY"))
-    voice_id = DEFAULT_VOICE.voice_id
+    voice_id = elevenlabs_config['voice_id']
     voice_settings = VoiceSettings(
-        stability=0.5,
-        similarity_boost=0.75,
-        style=0,
-        use_speaker_boost=False
+        stability=elevenlabs_config['stability'],
+        similarity_boost=elevenlabs_config['similarity_boost'],
+        style=elevenlabs_config['style'],
+        use_speaker_boost=elevenlabs_config['use_speaker_boost']
     )
     voice = Voice(
         voice_id=voice_id,

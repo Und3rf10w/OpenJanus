@@ -14,3 +14,13 @@ api_key = "sk...."
 
 [elevenlabs]
 api_key = ""
+# If not set, it'll use the default voice
+voice_id = ""
+# If not set it'll use the default stability (0.5)
+stability = 0.5
+# If not set it'll use the default similarity_boost (0.75)
+similarity_boost = 0.75
+# If not set it'll use the default style (0). You probably want this at zero
+style = 0
+# If not set to "True" it'll use the default speaker_boost setting (False)
+use_speaker_boost="False"
