@@ -43,8 +43,8 @@ def set_openai_api_key() -> str:
         else:
             LOGGER.debug("Setting openai API key from config file")
             config = load_config()
-            environ["OPENAI_API_KEY"] = config["openai"]["api_key"]
-            return config["openai"]["api_key"]
+            environ["OPENAI_API_KEY"] = config["openai"]["openai_api_key"]
+            return config["openai"]["openai_api_key"]
     except KeyError:
         LOGGER.error("The openai API key was not found in the environment variable or the config file")
         raise ApiKeyNotSetException("OpenAI")
@@ -59,8 +59,8 @@ def set_eleven_api_key() -> str:
         else:
             LOGGER.debug("Setting elevenlabs API key from config file")
             config = load_config()
-            environ["ELEVEN_API_KEY"] = config["elevenlabs"]["api_key"]
-            return config["elevenlabs"]["api_key"]
+            environ["ELEVEN_API_KEY"] = config["elevenlabs"]["eleven_api_key"]
+            return config["elevenlabs"]["eleven_api_key"]
     except KeyError:
         LOGGER.error("The elevenlabs API key was not found in the environment variable or the config file")
         raise ApiKeyNotSetException("Elevenlabs")
@@ -119,7 +119,7 @@ def get_recordings_dir() -> str:
         LOGGER.debug("Getting recordings directory from config file")
         config = load_config()
         recordings_dir = config["openjanus"]["recordings_directory"]
-        return path.relpath(recordings_dir)
+        return path.relpath(recordings_dir) + "/"
     except KeyError:
         LOGGER.error("The recordings directory was not found in the environment variable or the config file")
         raise ConfigKeyNotFound("openjanus/recordings_directory")
@@ -154,13 +154,13 @@ def get_elevenlabs_config() -> Dict[str, Any]:
         if not config["elevenlabs"]['elevenlabs_style']:
             LOGGER.warning("The elevenlabs style was not set, using the default style")
             config["elevenlabs"]["elevenlabs_style"] = 0
-        if not config["elevenlabs"]['elevenlabs_use_speaker_boost'] or config["elevenlabs"]['use_speaker_boost'].lower() != "true":
+        if not config["elevenlabs"]['elevenlabs_use_speaker_boost'] or config["elevenlabs"]['elevenlabs_use_speaker_boost'].lower() != "true":
             config["elevenlabs"]["elevenlabs_use_speaker_boost"] = False
         elif config["elevenlabs"]['elevenlabs_use_speaker_boost'].lower() == "true":
             config["elevenlabs"]["elevenlabs_use_speaker_boost"] = True
         else:
             LOGGER.warning("The elevenlabs use speaker boost was misconfigured, using the default use speaker boost")
-            config["elevenlabs"]["use_speaker_boost"] = False
+            config["elevenlabs"]["elevenlabs_use_speaker_boost"] = False
         return config["elevenlabs"]
             
     except KeyError:

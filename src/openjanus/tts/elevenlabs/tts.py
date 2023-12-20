@@ -1,6 +1,7 @@
 from datetime import datetime
 from enum import Enum
 import logging
+import pathlib
 import tempfile
 from typing import Any, Coroutine, Dict, Optional, Union, Iterator, Generator
 
@@ -12,6 +13,7 @@ from langchain.pydantic_v1 import root_validator
 from langchain.tools.base import BaseTool
 from langchain.utils import get_from_dict_or_env
 import openjanus.tts.elevenlabs.async_patch as eleven_labs_async_patch
+from openjanus.app.config import get_recordings_dir
 
 
 LOGGER = logging.getLogger(__name__)
@@ -56,6 +58,8 @@ class ElevenLabsText2SpeechTool(BaseTool):
         "Spanish, Italian, French, Portuguese, and Hindi. "
     )
     voice: Voice
+    output_dir: str = get_recordings_dir()
+    output_file_path: Optional[str] = ""
 
     @root_validator(pre=True)
     def validate_environment(cls, values: Dict) -> Dict:
@@ -63,6 +67,11 @@ class ElevenLabsText2SpeechTool(BaseTool):
         _ = get_from_dict_or_env(values, "eleven_api_key", "ELEVEN_API_KEY")
 
         return values
+    
+    def set_recording_path(self):
+        # TODO: Clean this up, set from config, etc
+        output_format = self.output_dir + f"output.{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.mp3".replace(' ','_')
+        self.output_file_path = str(pathlib.PurePath(output_format))
 
     def save_file(self, audio: Union[bytes, Iterator[bytes]]):
         if isinstance(audio, Iterator):
@@ -70,18 +79,18 @@ class ElevenLabsText2SpeechTool(BaseTool):
         else:
             raw_audio = audio
         elevenlabs = _import_elevenlabs()
-        now = datetime.now()
-        formatted_dt = now.strftime(format="%Y%m%d_%H%M%S")
-        elevenlabs.save(raw_audio, f"{formatted_dt}_{self.voice.voice_id}_chat.mp3")
+        self.set_recording_path()
+        elevenlabs.save(raw_audio, self.output_file_path)
 
     def _run(
         self, query, run_manager: Optional[CallbackManagerForToolRun] = None
-    ) -> str:
+    ):
         """Use the tool."""
         elevenlabs = _import_elevenlabs()
         try:
             speech = elevenlabs.generate(text=query, model=self.model, voice=self.voice)
             elevenlabs.play(speech)
+            self.save_file(audio=speech)
             # with tempfile.NamedTemporaryFile(
             #     mode="bx", suffix=".wav", delete=False
             # ) as f:
@@ -96,7 +105,7 @@ class ElevenLabsText2SpeechTool(BaseTool):
             await self.astream_speech_from_stream(
                 text_stream=stream,
                 chunk_size=100,
-                save_message=False,
+                save_message=True,
             )
         except Exception as e:
             raise RuntimeError(f"Error while running ElevenLabsText2SpeechTool: {e}")
@@ -104,7 +113,7 @@ class ElevenLabsText2SpeechTool(BaseTool):
 
 
 
-    def play(self, query: str, save_message: bool = False) -> None:
+    def play(self, query: str, save_message: bool = True) -> None:
         """
         Play the speech as text
 
@@ -143,7 +152,7 @@ class ElevenLabsText2SpeechTool(BaseTool):
         if save_message:
             self.save_file(b''.join(audio_chunks))
 
-    async def astream_speech(self, text_stream, save_message: bool = False) -> None:
+    async def astream_speech(self, text_stream, save_message: bool = True) -> None:
         async def async_generator_to_list(async_generator):
             return [item async for item in async_generator]
 
@@ -155,7 +164,7 @@ class ElevenLabsText2SpeechTool(BaseTool):
         for future in asyncio.as_completed(tasks):
             result = await future  # result is not used in this case
 
-    async def astream_speech_from_stream(self, text_stream, chunk_size: int = 1000, save_message: bool = False) -> None:
+    async def astream_speech_from_stream(self, text_stream, chunk_size: int = 1000, save_message: bool = True) -> None:
         """
         Play a text stream with TTS
 
