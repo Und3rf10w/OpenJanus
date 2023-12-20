@@ -43,8 +43,8 @@ def set_openai_api_key() -> str:
         else:
             LOGGER.debug("Setting openai API key from config file")
             config = load_config()
-            environ["OPENAI_API_KEY"] = config["openai"]["api_key"]
-            return config["openai"]["api_key"]
+            environ["OPENAI_API_KEY"] = config["openai"]["openai_api_key"]
+            return config["openai"]["openai_api_key"]
     except KeyError:
         LOGGER.error("The openai API key was not found in the environment variable or the config file")
         raise ApiKeyNotSetException("OpenAI")
@@ -59,8 +59,8 @@ def set_eleven_api_key() -> str:
         else:
             LOGGER.debug("Setting elevenlabs API key from config file")
             config = load_config()
-            environ["ELEVEN_API_KEY"] = config["elevenlabs"]["api_key"]
-            return config["elevenlabs"]["api_key"]
+            environ["ELEVEN_API_KEY"] = config["elevenlabs"]["eleven_api_key"]
+            return config["elevenlabs"]["eleven_api_key"]
     except KeyError:
         LOGGER.error("The elevenlabs API key was not found in the environment variable or the config file")
         raise ApiKeyNotSetException("Elevenlabs")
@@ -74,14 +74,14 @@ def check_mpv_path() -> str:
         try:
             LOGGER.debug("Setting mpv path from config file")
             config = load_config()
-            if not path.isfile(config["openjanus"]["mpv_path"]):
+            if not path.isfile(config["openai"]["whisper"]["mpv_path"]):
                 LOGGER.error("mpv.exe was not found")
                 raise TtsMpvNotFoundException()
             else:
-                return config["openjanus"]["mpv_path"]
+                return config["openai"]["whisper"]["mpv_path"]
         except KeyError:
             LOGGER.error("The mpv path was not found in the environment variable or the config file")
-            raise ConfigKeyNotFound("openjanus/mpv_path")
+            raise ConfigKeyNotFound("openai/whisper/mpv_path")
         except FileNotFoundError:
             LOGGER.error("mpv.exe was not found")
             raise TtsMpvNotFoundException()
@@ -119,7 +119,7 @@ def get_recordings_dir() -> str:
         LOGGER.debug("Getting recordings directory from config file")
         config = load_config()
         recordings_dir = config["openjanus"]["recordings_directory"]
-        return path.relpath(recordings_dir)
+        return path.relpath(recordings_dir) + "/"
     except KeyError:
         LOGGER.error("The recordings directory was not found in the environment variable or the config file")
         raise ConfigKeyNotFound("openjanus/recordings_directory")
@@ -134,6 +134,57 @@ def ensure_recordings_dir_exists():
         except Exception as e:
             LOGGER.error(f"Failed to create the {recordings_dir} directory", exc_info=e)
             raise DirectoryCreationException(f"Failed to create the {recordings_dir} directory") from e
+        
+def get_elevenlabs_config() -> Dict[str, Any]:
+    """Get the elevenlabs config"""
+    try:
+        LOGGER.debug("Getting elevenlabs config from config file")
+        config = load_config()
+        set_eleven_api_key()
+        if not config["elevenlabs"]["elevenlabs_voice_id"]:
+            LOGGER.warning("The elevenlabs voice was not set, using the default voice")
+            from openjanus.tts.elevenlabs.async_patch import DEFAULT_VOICE
+            config["elevenlabs"]["elevenlabs_voice_id"] = DEFAULT_VOICE
+        if not config["elevenlabs"]['elevenlabs_stability']:
+            LOGGER.warning("The elevenlabs stability was not set, using the default stability")
+            config["elevenlabs"]["elevenlabs_stability"] = 0.5
+        if not config["elevenlabs"]['elevenlabs_similarity_boost']:
+            LOGGER.warning("The elevenlabs similarity boost was not set, using the default similarity boost")
+            config["elevenlabs"]["elevenlabs_similarity_boost"] = 0.75
+        if not config["elevenlabs"]['elevenlabs_style']:
+            LOGGER.warning("The elevenlabs style was not set, using the default style")
+            config["elevenlabs"]["elevenlabs_style"] = 0
+        if not config["elevenlabs"]['elevenlabs_use_speaker_boost'] or config["elevenlabs"]['elevenlabs_use_speaker_boost'].lower() != "true":
+            config["elevenlabs"]["elevenlabs_use_speaker_boost"] = False
+        elif config["elevenlabs"]['elevenlabs_use_speaker_boost'].lower() == "true":
+            config["elevenlabs"]["elevenlabs_use_speaker_boost"] = True
+        else:
+            LOGGER.warning("The elevenlabs use speaker boost was misconfigured, using the default use speaker boost")
+            config["elevenlabs"]["elevenlabs_use_speaker_boost"] = False
+        return config["elevenlabs"]
+            
+    except KeyError:
+        LOGGER.error("The elevenlabs config was not found in the environment variable or the config file")
+        raise ConfigKeyNotFound("elevenlabs")
+    
+def get_openai_whisper_config() -> Dict[str, Any]:
+    """Get the openai whisper config"""
+    try:
+        LOGGER.debug("Getting openai whisper config from config file")
+        config = load_config()
+        if not config["openai"]["whisper"]["whisper_voice_id"]:
+            LOGGER.warning("The openai whisper voice id was not set, using the default voice id")
+            config["openai"]["whisper"]["whisper_voice_id"] = "nova"
+        if not config["openai"]["whisper"]["whisper_voice_model"]:
+            LOGGER.warning("The openai whisper voice model was not set, using the default voice model")
+            config["openai"]["whisper"]["whisper_voice_model"] = "tts-1"
+        if not config["openai"]["whisper"]["whisper_engine"]:
+            LOGGER.warning("The openai whisper engine was not set, using the default engine")
+            config["openai"]["whisper"]["whisper_engine"] = "whisper-1"
+        return config["openai"]["whisper"]
+    except KeyError:
+        LOGGER.error("The openai whisper config was not found in the environment variable or the config file")
+        raise ConfigKeyNotFound("openai/whisper")
 
 
 def startup_checks() -> bool:

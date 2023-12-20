@@ -4,11 +4,12 @@ import logging
 import pathlib
 import shutil
 import subprocess
-from typing import Any, Optional, Union, Iterator, Literal
+from typing import Any, Dict, Optional, Union, Iterator, Literal
 
 from langchain.tools.base import BaseTool
 
 from openjanus.app.config import get_recordings_dir
+from openjanus.app.config import get_openai_whisper_config
 
 
 LOGGER = logging.getLogger(__name__)
@@ -25,6 +26,7 @@ class OpenAIWhisperSpeaker(BaseTool):
     output_dir: str = get_recordings_dir()
     output_file_path: Optional[str] = ""
     verbose: bool = True
+    config: Dict[str, Any] = get_openai_whisper_config()
 
     def __init__(
             self, 
@@ -32,13 +34,15 @@ class OpenAIWhisperSpeaker(BaseTool):
             voice_id: Optional[Literal["alloy", "echo", "fable", "onyx", "nova", "shimmer"]] = "nova",
             voice_model: Optional[Union[str, Literal["tts-1", "tts-1-hd"]]] = "tts-1",
             output_dir: str = get_recordings_dir(),
+            config: Dict[str, Any] = get_openai_whisper_config(),
             *args,
             **kwargs
         ) -> None:
         super().__init__(*args, **kwargs)
+        self.config = config
         self.api_key = api_key
-        self.voice_id = voice_id
-        self.voice_model = voice_model
+        self.voice_id = self.config.get('whisper_voice_id', voice_id)
+        self.voice_model = self.config.get('whisper_voice_model', voice_model)
         self.output_dir = output_dir
         self.output_file_path = ""
 
