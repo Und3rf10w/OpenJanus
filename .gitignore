@@ -16,3 +16,4 @@ settings.json
 .pdm.toml
 recordings/*
 config.toml
+survey_data.json
