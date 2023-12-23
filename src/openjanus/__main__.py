@@ -80,7 +80,7 @@ if __name__ == "__main__":
     chat_llm = ChatOpenAI(
         model="gpt-3.5-turbo-1106",
         # model="gpt-4-1106-preview",
-        temperature=0.5,
+        temperature=0.3,
         streaming=True,
         verbose=True
     )

@@ -1,7 +1,10 @@
 from collections.abc import Mapping
 import logging
-from typing import List, Union, Dict
+from time import sleep
+from typing import List
 
+import keyboard
+import pydirectinput
 from pynput.keyboard import Key, Controller as KeyboardController
 from pynput.mouse import Button, Controller as MouseController
 from pynput.keyboard import KeyCode
@@ -88,11 +91,19 @@ def handle_keys(keys: List[str], hold: bool):
             key = special_keys[key_name_lower]
         else:
             # Assume the key is a single character and get a KeyCode for it
-            key = KeyCode.from_char(key_name)
+            key = KeyCode.from_char(key_name_lower)
 
         # Press or release the key based on the 'hold' flag
         if hold:
-            keyboard.press(key)
+            # start_time = time()  # Get the current time
+            # while time() - start_time < 0.3:  # Loop for 0.3 seconds
+            #     keyboard.press(key)
+            # keyboard.release(key)
+            LOGGER.debug(f"Holding {key_name_lower}")
+            pydirectinput.keyDown(key_name_lower)
+            sleep(3)
+            pydirectinput.keyUp(key_name_lower)
+            
         else:
             keyboard.press(key)
             keyboard.release(key)
@@ -109,8 +120,23 @@ def perform_action(action: dict):
 
     # Keyboard actions
     if 'keys' in action:
-        hold = action.get('hold', False)
-        handle_keys(action['keys'], hold)
+        if isinstance(action['keys'], str):
+            if action['keys'].startswith('hold '):
+                hold = True
+                key_name = action['keys'][5:]  # Get the key name after 'hold '
+                handle_keys([key_name], hold)
+        elif isinstance(action['keys'], list):
+            for key_str in action['keys']:
+                if key_str.lower().startswith('hold '):
+                    hold = True
+                    key_name = key_str[5:]  # Get the key name after 'hold '
+                else:
+                    if not 'hold' in action:
+                        hold = False
+                    else:
+                        hold = action['hold']
+                    key_name = key_str
+                handle_keys([key_name], hold)
 
 
 def run(keypresses: dict):

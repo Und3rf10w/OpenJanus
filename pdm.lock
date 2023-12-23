@@ -3,10 +3,9 @@
 
 [metadata]
 groups = ["default"]
-cross_platform = true
-static_urls = false
-lock_version = "4.3"
-content_hash = "sha256:68e7b451fa9ee0da089260813a34e450f62d9dea76105607c80523588a67c8b2"
+strategy = ["cross_platform"]
+lock_version = "4.4"
+content_hash = "sha256:5f0d0c242dc0c243cbfb59d4126b3c10dd5df080c1e9a079524fa14a1eee56a2"
 
 [[package]]
 name = "aiohttp"
@@ -735,6 +734,16 @@ files = [
 ]
 
 [[package]]
+name = "pydirectinput"
+version = "1.0.4"
+requires_python = ">=3.4"
+summary = "Python mouse and keyboard input automation for Windows using Direct Input."
+files = [
+    {file = "PyDirectInput-1.0.4-py3-none-any.whl", hash = "sha256:238bbe97f505f9c8728a47ea6a787750dbe834ec1fb42b98b3d703d827eda83e"},
+    {file = "PyDirectInput-1.0.4.tar.gz", hash = "sha256:bebe65102c69208688402f9f4cbd2ae7afc174fd2123e156e178b1304e7f80a2"},
+]
+
+[[package]]
 name = "pydub"
 version = "0.25.1"
 summary = "Manipulate audio with an simple and easy high level interface"
@@ -771,58 +780,75 @@ files = [
 
 [[package]]
 name = "pyobjc-core"
-version = "10.0"
+version = "10.1"
 requires_python = ">=3.8"
 summary = "Python<->ObjC Interoperability Module"
 files = [
-    {file = "pyobjc-core-10.0.tar.gz", hash = "sha256:3dd0a7b3acd7e0b8ffd3f5331b29a3aaebe79a03323e61efeece38627a6020b3"},
-    {file = "pyobjc_core-10.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:99b72cda4593e0c66037b25a178f2bcc6efffb6d5d9dcd477ecca859a1f9ae8e"},
-    {file = "pyobjc_core-10.0-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:2843ca32e86a01ccee67d7ad82a325ddd72d754929d1f2c0d96bc8741dc9af09"},
+    {file = "pyobjc-core-10.1.tar.gz", hash = "sha256:1844f1c8e282839e6fdcb9a9722396c1c12fb1e9331eb68828a26f28a3b2b2b1"},
+    {file = "pyobjc_core-10.1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:fe1b9987b7b0437685fb529832876c2a8463500114960d4e76bb8ae96b6bf208"},
+    {file = "pyobjc_core-10.1-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:9f628779c345d3abd0e20048fb0e256d894c22254577a81a6dcfdb92c3647682"},
 ]
 
 [[package]]
 name = "pyobjc-framework-applicationservices"
-version = "10.0"
+version = "10.1"
 requires_python = ">=3.8"
 summary = "Wrappers for the framework ApplicationServices on macOS"
 dependencies = [
-    "pyobjc-core>=10.0",
-    "pyobjc-framework-Cocoa>=10.0",
-    "pyobjc-framework-Quartz>=10.0",
+    "pyobjc-core>=10.1",
+    "pyobjc-framework-Cocoa>=10.1",
+    "pyobjc-framework-CoreText>=10.1",
+    "pyobjc-framework-Quartz>=10.1",
 ]
 files = [
-    {file = "pyobjc-framework-ApplicationServices-10.0.tar.gz", hash = "sha256:8a667da95c09202def58746c42d5093f90be5762a52e6f5ad8beb334b51dca20"},
-    {file = "pyobjc_framework_ApplicationServices-10.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:ebbe656c8b1a8fb3880d47ebef5cb7c95b9a646c84bc369cf132347dc4754143"},
-    {file = "pyobjc_framework_ApplicationServices-10.0-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:9cf969781616261ec7a2c427120a9fb4ac861e62bc2854de6cabdd2e4ea47141"},
+    {file = "pyobjc-framework-ApplicationServices-10.1.tar.gz", hash = "sha256:bb780eabadad0fbf36a128041dccfd71e30bbeb6b110852d37fd5c98f4a2ec04"},
+    {file = "pyobjc_framework_ApplicationServices-10.1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:ff352c33cad3f7bf8dd9b955ebb5db02d451d88eb04478d83edf0edd0cc8bf5d"},
+    {file = "pyobjc_framework_ApplicationServices-10.1-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:6d0706d5d9436298c8d619a1bb5be11a1f4ff9f4733797a393c6a706568de110"},
 ]
 
 [[package]]
 name = "pyobjc-framework-cocoa"
-version = "10.0"
+version = "10.1"
 requires_python = ">=3.8"
 summary = "Wrappers for the Cocoa frameworks on macOS"
 dependencies = [
-    "pyobjc-core>=10.0",
+    "pyobjc-core>=10.1",
 ]
 files = [
-    {file = "pyobjc-framework-Cocoa-10.0.tar.gz", hash = "sha256:723421eff4f59e4ca9a9bb8ec6dafbc0f778141236fa85a49fdd86732d58a74c"},
-    {file = "pyobjc_framework_Cocoa-10.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:0187cba228976a45f41116c74aab079b64bacb3ffc3c886a4bd8e472bf9be581"},
-    {file = "pyobjc_framework_Cocoa-10.0-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:a81dabdc40268591e3196087388e680c6570fed1b521df9b04733cb3ece0414e"},
+    {file = "pyobjc-framework-Cocoa-10.1.tar.gz", hash = "sha256:8faaf1292a112e488b777d0c19862d993f3f384f3927dc6eca0d8d2221906a14"},
+    {file = "pyobjc_framework_Cocoa-10.1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:0860a9beb7e5c72a1f575679a6d1428a398fa19ad710fb116df899972912e304"},
+    {file = "pyobjc_framework_Cocoa-10.1-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:34b791ea740e1afce211f19334e45469fea9a48d8fce5072e146199fd19ff49f"},
+]
+
+[[package]]
+name = "pyobjc-framework-coretext"
+version = "10.1"
+requires_python = ">=3.8"
+summary = "Wrappers for the framework CoreText on macOS"
+dependencies = [
+    "pyobjc-core>=10.1",
+    "pyobjc-framework-Cocoa>=10.1",
+    "pyobjc-framework-Quartz>=10.1",
+]
+files = [
+    {file = "pyobjc-framework-CoreText-10.1.tar.gz", hash = "sha256:b6a112e2ae8720be42af19e0fe9b866b43d7e9196726caa366d61d18294e6248"},
+    {file = "pyobjc_framework_CoreText-10.1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:37b203d832dd82bd9566c72eea815eb89f00f128a4c9a2f352843914da4effec"},
+    {file = "pyobjc_framework_CoreText-10.1-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:083700483b18f337b0c43bdfaafc43467846f8555075669d4962d460d9d6cd00"},
 ]
 
 [[package]]
 name = "pyobjc-framework-quartz"
-version = "10.0"
+version = "10.1"
 requires_python = ">=3.8"
 summary = "Wrappers for the Quartz frameworks on macOS"
 dependencies = [
-    "pyobjc-core>=10.0",
-    "pyobjc-framework-Cocoa>=10.0",
+    "pyobjc-core>=10.1",
+    "pyobjc-framework-Cocoa>=10.1",
 ]
 files = [
-    {file = "pyobjc-framework-Quartz-10.0.tar.gz", hash = "sha256:ff7c938d9c8adff87d577d63e58f9be6e4bc75274384715fa7a20032a1ce8b0e"},
-    {file = "pyobjc_framework_Quartz-10.0-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:52848a5e283a508c6895a73cb0c950bd4dca9b1186b70dd73ddc8f436d64fd42"},
-    {file = "pyobjc_framework_Quartz-10.0-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:f0cc89890de411a341e90d2c4148831b6d241fca66e734b5470d27869c04e33c"},
+    {file = "pyobjc-framework-Quartz-10.1.tar.gz", hash = "sha256:b7439c0a3be9590d261cd2d340ba8dd24a75877b0be3ebce56e022a19cc05738"},
+    {file = "pyobjc_framework_Quartz-10.1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:2ddcd18e96511e618ce43e288a043e25524c131f5e6d58775db7aaf15553d849"},
+    {file = "pyobjc_framework_Quartz-10.1-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:c4257a2fb5580e5ebe927a66cf36a11749685a4681a30f90e954a3f08894cb62"},
 ]
 
 [[package]]

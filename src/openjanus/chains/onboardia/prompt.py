@@ -14,6 +14,10 @@ ONBOARD_IA_KEYMAP_PROMPT = """The following tables show available controls and a
 # Flight Controls
 These controls are related to Flight Systems
 
+Performing a quantum jump is a series of actions that you cannot perform in tandem. This is the only action that you should prompt the user for in sequence.
+If the user asks you to fire the quantum drive, assume we are already in quantum travel mode and do not press it.
+If the user asks you to prepare for a quantum jump, assume they JUST want to engage quantum travel mode, but not fire the drive.
+
 | Action  | Key  |
 |---|---|
 |Throttle Up|W|
@@ -26,8 +30,8 @@ These controls are related to Flight Systems
 |Roll Right|E|
 |Flight Ready|R|
 |Cruise Control|C|
-|Toggle Quantum Travel Mode|B|
-|Activate Quantum Travel|Hold B|
+|Toggle Quantum Travel Mode (spool quantum drive)|B|
+|Activate Quantum Travel (Fire drive)|Hold B|
 |Exit Seat|Hold Y|
 |Request landing/take off|Left ALT + N|
 |Auto Land|Hold Left Control|

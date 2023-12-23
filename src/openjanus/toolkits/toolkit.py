@@ -8,7 +8,7 @@ from langchain.agents import AgentExecutor
 from langchain.chains import SequentialChain
 from langchain.chains.llm import LLMChain
 from langchain.chat_models.base import BaseChatModel
-from langchain.memory import ConversationSummaryBufferMemory
+from langchain.memory import ConversationSummaryBufferMemory, ConversationBufferWindowMemory
 from langchain.prompts import SystemMessagePromptTemplate, ChatPromptTemplate, HumanMessagePromptTemplate
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.schema import BaseMemory
@@ -164,7 +164,8 @@ def get_openjanus_tools(llm:BaseChatModel) -> list:
     try:
         tools = [
             atc_chain_tool(llm=llm, memory=ConversationSummaryBufferMemory(llm=llm, return_messages=True, memory_key="chat_history")),
-            onboard_ia_chain_tool(llm=llm, memory=ConversationSummaryBufferMemory(llm=llm, return_messages=True, memory_key="chat_history", output_key="response", input_key="input")),
+            # onboard_ia_chain_tool(llm=llm, memory=ConversationSummaryBufferMemory(llm=llm, return_messages=True, memory_key="chat_history", output_key="response", input_key="input")),
+            onboard_ia_chain_tool(llm=llm, memory=ConversationBufferWindowMemory(return_messages=True, memory_key="chat_history", output_key="response", input_key="input")),
             item_finder_tool(llm=llm, memory=ConversationSummaryBufferMemory(llm=llm, return_messages=True, memory_key="chat_history")),
             planetary_survey_tool(llm=llm, memory=ConversationSummaryBufferMemory(llm=llm, return_messages=True, memory_key="chat_history"))
         ]
