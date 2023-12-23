@@ -116,7 +116,8 @@ def perform_action(action: dict):
         button = get_button(action['mouse']['button'])
         clicks = action['mouse'].get('clicks', 1)
         hold = action['mouse'].get('hold', False)
-        mouse_action(button, clicks, hold)
+        if button is not None:
+            mouse_action(button, clicks, hold)
 
     # Keyboard actions
     if 'keys' in action:
