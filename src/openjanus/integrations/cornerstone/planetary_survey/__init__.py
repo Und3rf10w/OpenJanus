@@ -1,9 +1,10 @@
-from time import sleep
+from time import sleep, time
 from unicodedata import category
 from bs4 import BeautifulSoup
 from cachetools import cached, TTLCache
 from cachetools.keys import hashkey
 import json
+import os
 import re
 import requests
 from urllib.parse import urljoin
@@ -21,7 +22,7 @@ class PlanetarySurvey(Integration):
         ):
         self.base_url = base_url
         self.session = requests.session()
-        self.survey_data = self._cornerstone_get_planetary_survey_data(f"api/surveyDataV2/*").json()
+        self.save_or_load_survey_data('survey_data.json')
 
     def _hashkey(self, params):
         return hashkey(params)
@@ -36,6 +37,25 @@ class PlanetarySurvey(Integration):
         """
         location, category = [s.strip() for s in search_input.split(',')]
         return self.search_by_name(location, category)
+    
+    def download_and_save_survey_data(self, filename):
+        """Download survey data and save it to a file."""
+        self.survey_data = self._cornerstone_get_planetary_survey_data(f"api/surveyDataV2/*").json()
+        with open(filename, 'w') as f:
+            json.dump(self.survey_data, f)
+    
+    def save_or_load_survey_data(self, filename):
+        """Save survey data to a file if it doesn't exist or is older than 6 hours. Otherwise, load it from the file."""
+        # TODO: Actually do the stuff in the comment below
+        six_hours_in_seconds = 6 * 60 * 60
+        if os.path.exists(filename):
+            file_age = time() - os.path.getmtime(filename)
+            if file_age > six_hours_in_seconds:
+                self.download_and_save_survey_data(filename)
+            with open(filename, 'r') as f:
+                self.survey_data = json.load(f)
+        else:
+            self.download_and_save_survey_data(filename)
 
     
     @cached(cache=TTLCache(maxsize=100000, ttl=3600), key=(_hashkey))

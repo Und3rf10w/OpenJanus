@@ -1,6 +1,6 @@
 [project]
 name = "OpenJanus"
-version = "0.5.1"
+version = "0.5.2"
 description = "A voice controlled Intelligent Assistant for Star Citizen"
 authors = [
     {name = "Und3rf10w", email = "dontemailme@example.com"},
@@ -17,6 +17,7 @@ dependencies = [
     "cachetools>=5.3.2",
     "beautifulsoup4>=4.12.2",
     "pydirectinput>=1.0.4",
+    "keyboard>=0.13.5",
 ]
 requires-python = ">=3.11.6"
 readme = "README.md"

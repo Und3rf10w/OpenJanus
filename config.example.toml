@@ -5,6 +5,9 @@ listen_key = "f10"
 tts_engine = "elevenlabs"
 # The directory to store the recordings in, if it doesn't exist, we'll try to make it. Relative to working path.
 recordings_directory = "recordings"
+# The filename to write planetary_survey data. I'll set this to pull every 6 hours, but ideally it'd be every version change of Star Citizen
+# TODO: This needs to be an integration config, not a base openjanus config
+planetary_survey_filename = "survey_data.json"
 
 [openai]
 # Set your openai api key here
